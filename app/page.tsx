@@ -1,65 +1,113 @@
-import Image from "next/image";
+import Link from "next/link";
+import {
+  Building2,
+  Car,
+  Smartphone,
+  Tv,
+  PawPrint,
+  Sofa,
+  Shirt,
+  Factory,
+  Home as HomeIcon,
+} from "lucide-react";
+import { categories } from "@/lib/categories";
+import { cities } from "@/lib/cities";
+import { getListings } from "@/lib/listings";
+import { createClient } from "@/lib/supabase/server";
+import { isSupabaseConfigured } from "@/lib/supabase/is-configured";
+import ListingGrid from "@/components/listings/ListingGrid";
 
-export default function Home() {
+const categoryIcons: Record<string, React.ComponentType<{ className?: string }>> = {
+  "property-for-sale": Building2,
+  "property-for-rent": HomeIcon,
+  vehicles: Car,
+  mobiles: Smartphone,
+  "electronics-appliances": Tv,
+  animals: PawPrint,
+  "furniture-home": Sofa,
+  "fashion-beauty": Shirt,
+  "business-industry": Factory,
+};
+
+export default async function Home() {
+  let featured: Awaited<ReturnType<typeof getListings>>["listings"] = [];
+  let latest: Awaited<ReturnType<typeof getListings>>["listings"] = [];
+
+  if (isSupabaseConfigured) {
+    const supabase = await createClient();
+    const [featuredResult, latestResult] = await Promise.all([
+      getListings(supabase, { sort: "recommended", pageSize: 10 }),
+      getListings(supabase, { sort: "newest", pageSize: 10 }),
+    ]);
+    featured = featuredResult.listings.filter((l) => l.badge === "featured" || l.badge === "top");
+    latest = latestResult.listings;
+  }
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <div>
+      <section className="border-b border-line bg-gradient-to-b from-primary-light/60 to-background">
+        <div className="container-app py-14 text-center sm:py-20">
+          <h1 className="font-heading text-3xl font-bold tracking-tight text-ink sm:text-5xl">
+            Buy &amp; sell anything, <span className="text-primary">near you</span>
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="mx-auto mt-3 max-w-xl text-sm text-ink-muted sm:text-base">
+            Houses, cars, mobiles, and more — across Karachi, Lahore, Islamabad, and every major
+            city in Pakistan.
           </p>
+          <div className="mx-auto mt-6 flex max-w-md flex-wrap justify-center gap-2">
+            {cities.slice(0, 6).map((c) => (
+              <Link
+                key={c.slug}
+                href={`/vehicles/${c.slug}`}
+                className="rounded-full border border-line bg-surface px-3.5 py-1.5 text-xs font-medium text-ink-muted transition-colors hover:border-primary hover:text-primary"
+              >
+                {c.name}
+              </Link>
+            ))}
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </section>
+
+      <section className="container-app py-10">
+        <h2 className="font-heading text-xl font-semibold text-ink">Browse categories</h2>
+        <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5">
+          {categories.map((c) => {
+            const Icon = categoryIcons[c.slug] ?? Building2;
+            return (
+              <Link
+                key={c.slug}
+                href={`/${c.slug}/lahore`}
+                className="group flex flex-col items-center gap-2.5 rounded-md border border-line bg-surface p-5 text-center shadow-[var(--shadow-card)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[var(--shadow-card-hover)]"
+              >
+                <span className="flex h-11 w-11 items-center justify-center rounded-full bg-primary-light text-primary transition-colors group-hover:bg-primary group-hover:text-white">
+                  <Icon className="h-5 w-5" />
+                </span>
+                <span className="text-sm font-medium text-ink">{c.name}</span>
+              </Link>
+            );
+          })}
         </div>
-      </main>
+      </section>
+
+      {featured.length > 0 && (
+        <section className="container-app py-10">
+          <h2 className="font-heading text-xl font-semibold text-ink">Featured listings</h2>
+          <div className="mt-4">
+            <ListingGrid listings={featured} />
+          </div>
+        </section>
+      )}
+
+      <section className="container-app py-10">
+        <h2 className="font-heading text-xl font-semibold text-ink">Latest listings</h2>
+        <div className="mt-4">
+          <ListingGrid
+            listings={latest}
+            emptyTitle="No listings yet"
+            emptyDescription="Be the first to post an ad on OneBazaar."
+          />
+        </div>
+      </section>
     </div>
   );
 }
