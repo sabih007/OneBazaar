@@ -2,17 +2,16 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { ImageOff, MessageCircle } from "lucide-react";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getUser } from "@/lib/supabase/server";
 import { getConversations } from "@/lib/chat";
 
 export const metadata: Metadata = { title: "Inbox" };
 
 export default async function InboxPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getUser();
   if (!user) return null;
+
+  const supabase = await createClient();
 
   const conversations = await getConversations(supabase, user.id);
 

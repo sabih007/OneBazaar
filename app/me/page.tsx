@@ -1,16 +1,15 @@
 import type { Metadata } from "next";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getUser } from "@/lib/supabase/server";
 import { getMyListings } from "@/lib/listings";
 import MyListingsView from "@/components/dashboard/MyListingsView";
 
 export const metadata: Metadata = { title: "My listings" };
 
 export default async function MyListingsPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getUser();
   if (!user) return null;
+
+  const supabase = await createClient();
 
   const listings = await getMyListings(supabase, user.id);
 

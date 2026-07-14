@@ -1,16 +1,15 @@
 import type { Metadata } from "next";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getUser } from "@/lib/supabase/server";
 import { getFavoriteListings } from "@/lib/listings";
 import ListingGrid from "@/components/listings/ListingGrid";
 
 export const metadata: Metadata = { title: "Favorites" };
 
 export default async function FavoritesPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getUser();
   if (!user) return null;
+
+  const supabase = await createClient();
 
   const listings = await getFavoriteListings(supabase, user.id);
   const favoritedIds = new Set(listings.map((l) => l.id));

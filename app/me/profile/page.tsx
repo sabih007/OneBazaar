@@ -1,15 +1,14 @@
 import type { Metadata } from "next";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getUser } from "@/lib/supabase/server";
 import ProfileForm from "@/components/dashboard/ProfileForm";
 
 export const metadata: Metadata = { title: "Edit profile" };
 
 export default async function ProfilePage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getUser();
   if (!user) return null;
+
+  const supabase = await createClient();
 
   const { data: profile } = await supabase
     .from("profiles")

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Plus } from "lucide-react";
-import { createClient } from "@/lib/supabase/server";
+import { getUser } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/is-configured";
 import SearchBar from "@/components/layout/SearchBar";
 import CitySelector from "@/components/layout/CitySelector";
@@ -12,10 +12,7 @@ export default async function Header() {
   let isLoggedIn = false;
 
   if (isSupabaseConfigured) {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const user = await getUser();
     isLoggedIn = Boolean(user);
     fullName = (user?.user_metadata?.full_name as string | undefined) ?? null;
   }
