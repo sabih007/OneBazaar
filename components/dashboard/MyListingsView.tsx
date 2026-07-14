@@ -15,9 +15,22 @@ const tabs = [
   { key: "pending", label: "Pending" },
 ] as const;
 
-export default function MyListingsView({ listings }: { listings: Listing[] }) {
+export default function MyListingsView({ listings: initialListings }: { listings: Listing[] }) {
   const [tab, setTab] = useState<(typeof tabs)[number]["key"]>("active");
+  const [listings, setListings] = useState(initialListings);
   const filtered = listings.filter((l) => l.status === tab);
+
+  function updateListing(id: string, patch: Partial<Listing>) {
+    setListings((prev) => prev.map((l) => (l.id === id ? { ...l, ...patch } : l)));
+  }
+
+  function removeListing(id: string) {
+    setListings((prev) => prev.filter((l) => l.id !== id));
+  }
+
+  function restoreListing(listing: Listing) {
+    setListings((prev) => (prev.some((l) => l.id === listing.id) ? prev : [...prev, listing]));
+  }
 
   return (
     <div>
@@ -53,7 +66,15 @@ export default function MyListingsView({ listings }: { listings: Listing[] }) {
             </Link>
           </div>
         ) : (
-          filtered.map((listing) => <MyListingRow key={listing.id} listing={listing} />)
+          filtered.map((listing) => (
+            <MyListingRow
+              key={listing.id}
+              listing={listing}
+              onUpdate={updateListing}
+              onRemove={removeListing}
+              onRestore={restoreListing}
+            />
+          ))
         )}
       </div>
     </div>

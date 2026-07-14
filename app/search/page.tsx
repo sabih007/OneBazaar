@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { getListings, type SortOption } from "@/lib/listings";
+import { expireStalePromotions } from "@/lib/promotions-server";
 import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/is-configured";
 import ListingGrid from "@/components/listings/ListingGrid";
@@ -22,6 +23,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
   if (isSupabaseConfigured && query) {
     const supabase = await createClient();
+    expireStalePromotions(supabase);
     const result = await getListings(supabase, {
       query,
       sort: (sp.sort as SortOption) ?? "recommended",

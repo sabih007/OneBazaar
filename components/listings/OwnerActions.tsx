@@ -17,12 +17,16 @@ export default function OwnerActions({
 }) {
   const router = useRouter();
   const [pending, setPending] = useState<string | null>(null);
+  const [sold, setSold] = useState(status === "sold");
 
   async function onMarkSold() {
     setPending("sold");
+    setSold(true); // optimistic — flip immediately, roll back on failure
     try {
       await markListingSold(createClient(), listingId);
-      router.refresh();
+      router.refresh(); // reconciles the "Sold" ribbon elsewhere on the page
+    } catch {
+      setSold(false);
     } finally {
       setPending(null);
     }
@@ -56,7 +60,7 @@ export default function OwnerActions({
             Edit listing
           </Button>
         </Link>
-        {status !== "sold" && (
+        {!sold && (
           <Button
             variant="secondary"
             className="w-full gap-2"
@@ -64,7 +68,7 @@ export default function OwnerActions({
             disabled={pending === "sold"}
           >
             <CheckCircle2 className="h-4 w-4" aria-hidden />
-            {pending === "sold" ? "Marking sold…" : "Mark as sold"}
+            Mark as sold
           </Button>
         )}
         <Button

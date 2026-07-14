@@ -8,7 +8,8 @@ import {
   incrementListingViews,
 } from "@/lib/listings";
 import { getPublicProfile } from "@/lib/profiles";
-import { createClient } from "@/lib/supabase/server";
+import { expireStalePromotions } from "@/lib/promotions-server";
+import { createClient, getUser } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/is-configured";
 import { formatPKR } from "@/lib/utils";
 import {
@@ -88,12 +89,13 @@ export default async function ListingDetailPage({ params }: ListingPageProps) {
   }
 
   const supabase = await createClient();
-  const listing = await getListingBySlug(supabase, citySlug, listingSlug);
+  expireStalePromotions(supabase);
+  const [listing, user] = await Promise.all([
+    getListingBySlug(supabase, citySlug, listingSlug),
+    getUser(),
+  ]);
   if (!listing) notFound();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
   const isOwner = user?.id === listing.user_id;
   const isLoggedIn = Boolean(user);
 
@@ -111,7 +113,8 @@ export default async function ListingDetailPage({ params }: ListingPageProps) {
   ]);
 
   if (!isOwner) {
-    await incrementListingViews(supabase, listing.id);
+    // Fire-and-forget — the view count isn't part of this render, no need to block on it.
+    incrementListingViews(supabase, listing.id).catch(() => {});
   }
 
   const breadcrumbs = [

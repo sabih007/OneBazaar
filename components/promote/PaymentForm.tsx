@@ -10,10 +10,10 @@ import { formatPKR, cn } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
 
 const methods: { value: PaymentMethod; label: string; icon: typeof Wallet; enabled: boolean }[] = [
-  { value: "mock", label: "Mock payment (MVP)", icon: CheckCircle2, enabled: true },
+  { value: "card", label: "Card (Safepay)", icon: CreditCard, enabled: true },
+  { value: "mock", label: "Mock payment (dev only)", icon: CheckCircle2, enabled: true },
   { value: "jazzcash", label: "JazzCash", icon: Wallet, enabled: false },
   { value: "easypaisa", label: "Easypaisa", icon: Wallet, enabled: false },
-  { value: "card", label: "Card (Safepay/PayFast)", icon: CreditCard, enabled: false },
 ];
 
 export default function PaymentForm({
@@ -26,7 +26,7 @@ export default function PaymentForm({
   pkg: Package;
 }) {
   const router = useRouter();
-  const [method, setMethod] = useState<PaymentMethod>("mock");
+  const [method, setMethod] = useState<PaymentMethod>("card");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
@@ -34,6 +34,26 @@ export default function PaymentForm({
   async function onConfirm() {
     setSubmitting(true);
     setError(null);
+
+    if (method === "card") {
+      try {
+        const res = await fetch("/api/safepay/checkout", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ listingId, packageId: pkg.id }),
+        });
+        const json = await res.json();
+        if (!res.ok || !json.checkoutUrl) {
+          throw new Error(json.error ?? "Could not start Safepay checkout");
+        }
+        window.location.href = json.checkoutUrl; // leaves the app — Safepay redirects back to /api/safepay/callback
+      } catch {
+        setError("Couldn't start checkout. Please try again.");
+        setSubmitting(false);
+      }
+      return;
+    }
+
     try {
       await purchasePromotion(createClient(), {
         listingId,
@@ -95,7 +115,11 @@ export default function PaymentForm({
           <p className="font-heading text-xl font-bold text-ink">{formatPKR(pkg.price)}</p>
         </div>
         <Button onClick={onConfirm} disabled={submitting} className="gap-2">
-          {submitting ? "Processing…" : `Pay ${formatPKR(pkg.price)}`}
+          {submitting
+            ? "Processing…"
+            : method === "card"
+              ? "Continue to Safepay"
+              : `Pay ${formatPKR(pkg.price)}`}
         </Button>
       </div>
 

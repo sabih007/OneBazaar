@@ -26,10 +26,14 @@ export default function ListingCard({ listing, userId, isFavorited = false }: Li
     e.preventDefault();
     e.stopPropagation();
     if (!userId || pending) return;
+
+    const previous = favorited;
+    setFavorited(!previous); // optimistic — flip immediately, roll back on failure
     setPending(true);
     try {
-      const next = await toggleFavorite(createClient(), userId, listing.id, favorited);
-      setFavorited(next);
+      await toggleFavorite(createClient(), userId, listing.id, previous);
+    } catch {
+      setFavorited(previous);
     } finally {
       setPending(false);
     }

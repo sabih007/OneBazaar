@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { createClient, getUser } from "@/lib/supabase/server";
 import { getMyListings } from "@/lib/listings";
+import { expireStalePromotions } from "@/lib/promotions-server";
 import MyListingsView from "@/components/dashboard/MyListingsView";
 
 export const metadata: Metadata = { title: "My listings" };
@@ -10,6 +11,7 @@ export default async function MyListingsPage() {
   if (!user) return null;
 
   const supabase = await createClient();
+  expireStalePromotions(supabase);
 
   const listings = await getMyListings(supabase, user.id);
 

@@ -27,10 +27,14 @@ export default function SaveButton({
       return;
     }
     if (pending) return;
+
+    const previous = favorited;
+    setFavorited(!previous); // optimistic — flip immediately, roll back on failure
     setPending(true);
     try {
-      const next = await toggleFavorite(createClient(), userId, listingId, favorited);
-      setFavorited(next);
+      await toggleFavorite(createClient(), userId, listingId, previous);
+    } catch {
+      setFavorited(previous);
     } finally {
       setPending(false);
     }

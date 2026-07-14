@@ -37,10 +37,33 @@ export default function ChatThread({
   async function onSend() {
     const body = draft.trim();
     if (!body || sending) return;
-    setSending(true);
     setDraft("");
+    setSending(true);
+
+    const tempId = `temp-${Date.now()}`;
+    setMessages((prev) => [
+      ...prev,
+      {
+        id: tempId,
+        conversation_id: conversationId,
+        sender_id: currentUserId,
+        body,
+        created_at: new Date().toISOString(),
+        read_at: null,
+      },
+    ]);
+
     try {
-      await sendMessage(createClient(), { conversationId, senderId: currentUserId, body });
+      const sent = await sendMessage(createClient(), { conversationId, senderId: currentUserId, body });
+      setMessages((prev) => {
+        const seen = new Set<string>();
+        return prev
+          .map((m) => (m.id === tempId ? sent : m))
+          .filter((m) => (seen.has(m.id) ? false : (seen.add(m.id), true)));
+      });
+    } catch {
+      setMessages((prev) => prev.filter((m) => m.id !== tempId));
+      setDraft(body); // give the message back so it isn't lost
     } finally {
       setSending(false);
     }

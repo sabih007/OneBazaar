@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { getCategory } from "@/lib/categories";
 import { getCity } from "@/lib/cities";
 import { getListings, type SortOption } from "@/lib/listings";
+import { expireStalePromotions } from "@/lib/promotions-server";
 import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/is-configured";
 import { breadcrumbListJsonLd, toJsonLdScript } from "@/lib/seo/jsonld";
@@ -50,6 +51,7 @@ export default async function BrowsePage({ params, searchParams }: BrowsePagePro
 
   if (isSupabaseConfigured) {
     const supabase = await createClient();
+    expireStalePromotions(supabase);
     const result = await getListings(supabase, {
       categorySlug: category.slug,
       citySlug: city.slug,

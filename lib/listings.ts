@@ -1,7 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Listing } from "@/types/database";
 import { slugifyTitle } from "@/lib/seo/slugify";
-import { expireStalePromotions } from "@/lib/promotions";
 
 export type SortOption = "recommended" | "newest" | "price_asc" | "price_desc";
 
@@ -19,8 +18,6 @@ export interface ListingFilters {
 }
 
 export async function getListings(supabase: SupabaseClient, filters: ListingFilters) {
-  await expireStalePromotions(supabase);
-
   const page = filters.page ?? 1;
   const pageSize = filters.pageSize ?? 24;
   const from = (page - 1) * pageSize;
@@ -73,8 +70,6 @@ export async function getListingBySlug(
   citySlug: string,
   listingSlug: string
 ) {
-  await expireStalePromotions(supabase);
-
   const { data, error } = await supabase
     .from("listings")
     .select("*")
@@ -106,8 +101,6 @@ export async function getSimilarListings(
 }
 
 export async function getMyListings(supabase: SupabaseClient, userId: string) {
-  await expireStalePromotions(supabase);
-
   const { data, error } = await supabase
     .from("listings")
     .select("*")

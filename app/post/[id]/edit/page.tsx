@@ -26,16 +26,13 @@ export default async function EditListingPage({
     );
   }
 
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getUser();
 
   if (!user) {
     redirect(`/login?redirect=/post/${id}/edit`);
   }
 
+  const supabase = await createClient();
   const { data: listing } = await supabase.from("listings").select("*").eq("id", id).maybeSingle();
 
   if (!listing) notFound();

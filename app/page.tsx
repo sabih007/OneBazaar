@@ -13,6 +13,7 @@ import {
 import { categories } from "@/lib/categories";
 import { cities } from "@/lib/cities";
 import { getListings } from "@/lib/listings";
+import { expireStalePromotions } from "@/lib/promotions-server";
 import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/is-configured";
 import ListingGrid from "@/components/listings/ListingGrid";
@@ -35,6 +36,7 @@ export default async function Home() {
 
   if (isSupabaseConfigured) {
     const supabase = await createClient();
+    expireStalePromotions(supabase);
     const [featuredResult, latestResult] = await Promise.all([
       getListings(supabase, { sort: "recommended", pageSize: 10 }),
       getListings(supabase, { sort: "newest", pageSize: 10 }),

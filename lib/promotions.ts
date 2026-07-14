@@ -1,19 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { AdPromotion, Listing, Package, PaymentMethod } from "@/types/database";
 
-/**
- * Check-on-read expiry (§6): clears badge/rank on listings whose promotion lapsed.
- * Best-effort — a failed RPC (e.g. offline, migration not yet applied) shouldn't
- * break the read path that called it.
- */
-export async function expireStalePromotions(supabase: SupabaseClient) {
-  try {
-    await supabase.rpc("expire_promotions");
-  } catch {
-    // ignore
-  }
-}
-
 export async function getActivePackages(supabase: SupabaseClient) {
   const { data, error } = await supabase
     .from("packages")
@@ -26,6 +13,56 @@ export async function getActivePackages(supabase: SupabaseClient) {
   return (data ?? []) as Package[];
 }
 
+/** Applies a package's badge/rank (or bump) to its listing. Shared by every payment path. */
+async function applyPackageToListing(
+  supabase: SupabaseClient,
+  { listingId, packageRow }: { listingId: string; packageRow: Package }
+) {
+  const now = new Date();
+  const isBump = packageRow.key === "bump";
+  const computedExpiry = new Date(now.getTime() + packageRow.duration_days * 24 * 60 * 60 * 1000);
+
+  if (isBump) {
+    const { error } = await supabase
+      .from("listings")
+      .update({ bumped_at: now.toISOString() })
+      .eq("id", listingId);
+    if (error) throw error;
+    return;
+  }
+
+  const { data: listing, error: listingError } = await supabase
+    .from("listings")
+    .select("promotion_rank, promoted_until")
+    .eq("id", listingId)
+    .single();
+  if (listingError) throw listingError;
+  const current = listing as Pick<Listing, "promotion_rank" | "promoted_until">;
+
+  if (packageRow.promotion_rank < current.promotion_rank) return; // §6: don't downgrade an active stronger badge
+
+  const currentExpiry = current.promoted_until ? new Date(current.promoted_until) : null;
+  const promotedUntil =
+    currentExpiry && currentExpiry > computedExpiry ? currentExpiry : computedExpiry;
+
+  const { error } = await supabase
+    .from("listings")
+    .update({
+      badge: packageRow.badge,
+      promotion_rank: packageRow.promotion_rank,
+      promoted_until: promotedUntil.toISOString(),
+      is_featured: packageRow.badge === "featured" || packageRow.badge === "top",
+    })
+    .eq("id", listingId);
+  if (error) throw error;
+}
+
+function computeExpiresAt(packageRow: Package) {
+  const now = new Date();
+  if (packageRow.key === "bump") return now;
+  return new Date(now.getTime() + packageRow.duration_days * 24 * 60 * 60 * 1000);
+}
+
 export interface PurchasePromotionInput {
   listingId: string;
   userId: string;
@@ -33,6 +70,7 @@ export interface PurchasePromotionInput {
   paymentMethod: PaymentMethod;
 }
 
+/** Mock/manual payment — settles instantly, no external gateway round trip (§6 MVP path). */
 export async function purchasePromotion(
   supabase: SupabaseClient,
   { listingId, userId, packageId, paymentMethod }: PurchasePromotionInput
@@ -45,18 +83,7 @@ export async function purchasePromotion(
   if (pkgError) throw pkgError;
   const packageRow = pkg as Package;
 
-  const { data: listing, error: listingError } = await supabase
-    .from("listings")
-    .select("promotion_rank, promoted_until, badge")
-    .eq("id", listingId)
-    .single();
-  if (listingError) throw listingError;
-  const current = listing as Pick<Listing, "promotion_rank" | "promoted_until" | "badge">;
-
   const now = new Date();
-  const isBump = packageRow.key === "bump";
-  const computedExpiry = new Date(now.getTime() + packageRow.duration_days * 24 * 60 * 60 * 1000);
-
   const { data: promotion, error: insertError } = await supabase
     .from("ad_promotions")
     .insert({
@@ -64,41 +91,85 @@ export async function purchasePromotion(
       user_id: userId,
       package_id: packageId,
       starts_at: now.toISOString(),
-      expires_at: (isBump ? now : computedExpiry).toISOString(),
+      expires_at: computeExpiresAt(packageRow).toISOString(),
       amount: packageRow.price,
       payment_method: paymentMethod,
-      // MVP: no real gateway wired up yet, so mock/manual payments settle instantly (§6).
       payment_status: "paid",
     })
     .select()
     .single();
   if (insertError) throw insertError;
 
-  if (isBump) {
-    const { error } = await supabase
-      .from("listings")
-      .update({ bumped_at: now.toISOString() })
-      .eq("id", listingId);
-    if (error) throw error;
-  } else if (packageRow.promotion_rank >= current.promotion_rank) {
-    // A weaker package (e.g. Urgent) must not downgrade an active stronger badge (e.g. Top) — §6.
-    const currentExpiry = current.promoted_until ? new Date(current.promoted_until) : null;
-    const promotedUntil =
-      currentExpiry && currentExpiry > computedExpiry ? currentExpiry : computedExpiry;
-
-    const { error } = await supabase
-      .from("listings")
-      .update({
-        badge: packageRow.badge,
-        promotion_rank: packageRow.promotion_rank,
-        promoted_until: promotedUntil.toISOString(),
-        is_featured: packageRow.badge === "featured" || packageRow.badge === "top",
-      })
-      .eq("id", listingId);
-    if (error) throw error;
-  }
+  await applyPackageToListing(supabase, { listingId, packageRow });
 
   return promotion as AdPromotion;
+}
+
+/** Starts a real-gateway purchase: records the attempt as `pending` before redirecting off-site. */
+export async function createPendingPromotion(
+  supabase: SupabaseClient,
+  { listingId, userId, packageId, paymentMethod }: PurchasePromotionInput
+) {
+  const { data: pkg, error: pkgError } = await supabase
+    .from("packages")
+    .select("*")
+    .eq("id", packageId)
+    .single();
+  if (pkgError) throw pkgError;
+  const packageRow = pkg as Package;
+
+  const now = new Date();
+  const { data: promotion, error: insertError } = await supabase
+    .from("ad_promotions")
+    .insert({
+      listing_id: listingId,
+      user_id: userId,
+      package_id: packageId,
+      starts_at: now.toISOString(),
+      expires_at: computeExpiresAt(packageRow).toISOString(),
+      amount: packageRow.price,
+      payment_method: paymentMethod,
+      payment_status: "pending",
+    })
+    .select()
+    .single();
+  if (insertError) throw insertError;
+
+  return { promotion: promotion as AdPromotion, packageRow };
+}
+
+/** Confirms a real-gateway payment succeeded and applies it — called from the callback route only. */
+export async function markPromotionPaid(
+  supabase: SupabaseClient,
+  { promotionId, paymentRef }: { promotionId: string; paymentRef: string }
+) {
+  const { data: promotion, error } = await supabase
+    .from("ad_promotions")
+    .update({ payment_status: "paid", payment_ref: paymentRef })
+    .eq("id", promotionId)
+    .select("listing_id, package_id")
+    .single();
+  if (error) throw error;
+
+  const { data: pkg, error: pkgError } = await supabase
+    .from("packages")
+    .select("*")
+    .eq("id", promotion.package_id)
+    .single();
+  if (pkgError) throw pkgError;
+
+  await applyPackageToListing(supabase, { listingId: promotion.listing_id, packageRow: pkg as Package });
+}
+
+export async function markPromotionFailed(
+  supabase: SupabaseClient,
+  { promotionId, paymentRef }: { promotionId: string; paymentRef?: string }
+) {
+  const { error } = await supabase
+    .from("ad_promotions")
+    .update({ payment_status: "failed", payment_ref: paymentRef ?? null })
+    .eq("id", promotionId);
+  if (error) throw error;
 }
 
 export interface AdPromotionWithDetails extends AdPromotion {

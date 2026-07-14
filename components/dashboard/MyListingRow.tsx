@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { CheckCircle2, ImageOff, Pencil, RotateCcw, Sparkles, Trash2 } from "lucide-react";
 import type { Listing } from "@/types/database";
@@ -19,16 +18,45 @@ const statusLabel: Record<string, string> = {
   expired: "Expired",
 };
 
-export default function MyListingRow({ listing }: { listing: Listing }) {
-  const router = useRouter();
+export default function MyListingRow({
+  listing,
+  onUpdate,
+  onRemove,
+  onRestore,
+}: {
+  listing: Listing;
+  onUpdate: (id: string, patch: Partial<Listing>) => void;
+  onRemove: (id: string) => void;
+  onRestore: (listing: Listing) => void;
+}) {
   const [pending, setPending] = useState<string | null>(null);
   const href = `/${listing.category_slug}/${listing.city_slug}/${listing.slug}`;
 
-  async function run(action: string, fn: () => Promise<void>) {
+  /** Applies `optimistic` immediately, then fires `fn`; rolls back on failure. */
+  async function run(
+    action: string,
+    optimistic: Partial<Listing>,
+    fn: () => Promise<void>
+  ) {
     setPending(action);
+    onUpdate(listing.id, optimistic);
     try {
       await fn();
-      router.refresh();
+    } catch {
+      onUpdate(listing.id, listing);
+    } finally {
+      setPending(null);
+    }
+  }
+
+  async function runDelete() {
+    setPending("delete");
+    const snapshot = listing;
+    onRemove(listing.id); // optimistic — vanish immediately, restore on failure
+    try {
+      await deleteListing(createClient(), listing.id);
+    } catch {
+      onRestore(snapshot);
     } finally {
       setPending(null);
     }
@@ -78,7 +106,11 @@ export default function MyListingRow({ listing }: { listing: Listing }) {
             variant="secondary"
             className="gap-1.5"
             disabled={pending === "repost"}
-            onClick={() => run("repost", () => repostListing(createClient(), listing.id))}
+            onClick={() =>
+              run("repost", { status: "active", bumped_at: new Date().toISOString() }, () =>
+                repostListing(createClient(), listing.id)
+              )
+            }
           >
             <RotateCcw className="h-3.5 w-3.5" /> Repost
           </Button>
@@ -88,7 +120,7 @@ export default function MyListingRow({ listing }: { listing: Listing }) {
             variant="secondary"
             className="gap-1.5"
             disabled={pending === "sold"}
-            onClick={() => run("sold", () => markListingSold(createClient(), listing.id))}
+            onClick={() => run("sold", { status: "sold" }, () => markListingSold(createClient(), listing.id))}
           >
             <CheckCircle2 className="h-3.5 w-3.5" /> Mark sold
           </Button>
@@ -98,10 +130,7 @@ export default function MyListingRow({ listing }: { listing: Listing }) {
           variant="danger"
           className="gap-1.5"
           disabled={pending === "delete"}
-          onClick={() =>
-            window.confirm("Delete this listing?") &&
-            run("delete", () => deleteListing(createClient(), listing.id))
-          }
+          onClick={() => window.confirm("Delete this listing?") && runDelete()}
         >
           <Trash2 className="h-3.5 w-3.5" /> Delete
         </Button>
