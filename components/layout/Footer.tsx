@@ -11,7 +11,7 @@ export default function Footer() {
       <div className="container-app grid grid-cols-2 gap-8 py-10 sm:grid-cols-4">
         <div className="col-span-2 sm:col-span-1">
           <Link href="/" className="font-heading text-xl font-bold text-primary">
-            One<span className="text-ink">Bazaar</span>
+            Sellox
           </Link>
           <p className="mt-2 text-sm text-ink-muted">
             Pakistan&apos;s marketplace to buy and sell anything, safely.
@@ -63,13 +63,23 @@ export default function Footer() {
                 Browse listings
               </Link>
             </li>
+            <li>
+              <Link href="/terms" className="hover:text-primary">
+                Terms &amp; Conditions
+              </Link>
+            </li>
+            <li>
+              <Link href="/privacy" className="hover:text-primary">
+                Privacy Policy
+              </Link>
+            </li>
           </ul>
         </div>
       </div>
 
       <div className="border-t border-line py-4">
         <p className="container-app text-center text-xs text-ink-muted">
-          © {new Date().getFullYear()} OneBazaar. All rights reserved.
+          © {new Date().getFullYear()} Sellox. All rights reserved.
         </p>
       </div>
     </footer>

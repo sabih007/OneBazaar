@@ -17,6 +17,8 @@ import { expireStalePromotions } from "@/lib/promotions-server";
 import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/is-configured";
 import ListingGrid from "@/components/listings/ListingGrid";
+import AdSlot from "@/components/ads/AdSlot";
+import { AD_SLOTS } from "@/lib/ads";
 
 const categoryIcons: Record<string, React.ComponentType<{ className?: string }>> = {
   "property-for-sale": Building2,
@@ -91,6 +93,10 @@ export default async function Home() {
         </div>
       </section>
 
+      <div className="container-app">
+        <AdSlot slot={AD_SLOTS.home} label="Home" />
+      </div>
+
       {featured.length > 0 && (
         <section className="container-app py-10">
           <h2 className="font-heading text-xl font-semibold text-ink">Featured listings</h2>
@@ -106,7 +112,7 @@ export default async function Home() {
           <ListingGrid
             listings={latest}
             emptyTitle="No listings yet"
-            emptyDescription="Be the first to post an ad on OneBazaar."
+            emptyDescription="Be the first to post an ad on Sellox."
           />
         </div>
       </section>

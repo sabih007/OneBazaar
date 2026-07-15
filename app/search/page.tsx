@@ -4,6 +4,8 @@ import { expireStalePromotions } from "@/lib/promotions-server";
 import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/is-configured";
 import ListingGrid from "@/components/listings/ListingGrid";
+import AdSlot from "@/components/ads/AdSlot";
+import { AD_SLOTS } from "@/lib/ads";
 
 export const metadata: Metadata = {
   title: "Search listings",
@@ -36,7 +38,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   return (
     <div className="container-app py-6">
       <h1 className="font-heading text-2xl font-bold text-ink">
-        {query ? `Results for "${query}"` : "Search OneBazaar"}
+        {query ? `Results for "${query}"` : "Search Sellox"}
       </h1>
       <p className="mt-1 text-sm text-ink-muted">
         {query
@@ -45,6 +47,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
       </p>
 
       <div className="mt-5">
+        <AdSlot slot={AD_SLOTS.search} label="Search" className="mb-5" />
         <ListingGrid
           listings={listings}
           emptyTitle={query ? "No matches" : "Start typing to search"}

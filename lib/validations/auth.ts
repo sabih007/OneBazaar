@@ -19,3 +19,9 @@ export const loginSchema = z.object({
 });
 
 export type LoginInput = z.infer<typeof loginSchema>;
+
+export const verifyOtpSchema = z.object({
+  code: z.string().regex(/^\d{6}$/, "Enter the 6-digit code"),
+});
+
+export type VerifyOtpInput = z.infer<typeof verifyOtpSchema>;

@@ -24,7 +24,7 @@ export default function SellerCard({ seller, listingId, isOwner, isLoggedIn, use
         </span>
         <div className="min-w-0">
           <p className="flex items-center gap-1 truncate text-sm font-semibold text-ink">
-            {seller.full_name || "OneBazaar seller"}
+            {seller.full_name || "Sellox seller"}
             {seller.is_verified && (
               <BadgeCheck className="h-4 w-4 shrink-0 text-success" aria-label="Verified seller" />
             )}

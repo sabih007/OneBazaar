@@ -27,6 +27,8 @@ import ReportButton from "@/components/listings/ReportButton";
 import SellerCard from "@/components/listings/SellerCard";
 import OwnerActions from "@/components/listings/OwnerActions";
 import ListingGrid from "@/components/listings/ListingGrid";
+import AdSlot from "@/components/ads/AdSlot";
+import { AD_SLOTS } from "@/lib/ads";
 
 interface ListingPageParams {
   category: string;
@@ -47,7 +49,7 @@ export async function generateMetadata({ params }: ListingPageProps): Promise<Me
   if (!listing) return {};
 
   const city = getCity(citySlug);
-  const title = `${listing.title} in ${city?.name ?? listing.city} — Rs. ${new Intl.NumberFormat("en-PK").format(listing.price)} | OneBazaar`;
+  const title = `${listing.title} in ${city?.name ?? listing.city} — Rs. ${new Intl.NumberFormat("en-PK").format(listing.price)} | Sellox`;
   const description = listing.description.slice(0, 150);
   const url = `/${listing.category_slug}/${listing.city_slug}/${listing.slug}`;
 
@@ -198,7 +200,7 @@ export default async function ListingDetailPage({ params }: ListingPageProps) {
           </div>
         </div>
 
-        <div className="space-y-4 lg:col-span-1">
+        <div className="flex flex-col gap-4 self-start lg:col-span-1">
           {isOwner ? (
             <OwnerActions listingId={listing.id} status={listing.status} />
           ) : (
@@ -211,8 +213,11 @@ export default async function ListingDetailPage({ params }: ListingPageProps) {
             />
           )}
           <SafetyNotice />
+          <AdSlot slot={AD_SLOTS.listingSidebar} label="Listing sidebar" className="h-72" />
         </div>
       </div>
+
+      <AdSlot slot={AD_SLOTS.listing} label="Listing" className="mt-10" />
 
       {similar.length > 0 && (
         <div className="mt-10">

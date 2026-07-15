@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: SellerPageProps): Promise<Met
   const supabase = await createClient();
   const seller = await getPublicProfile(supabase, id);
   if (!seller) return {};
-  return { title: `${seller.full_name || "Seller"} — OneBazaar` };
+  return { title: `${seller.full_name || "Seller"} — Sellox` };
 }
 
 export default async function SellerProfilePage({ params }: SellerPageProps) {
@@ -56,7 +56,7 @@ export default async function SellerProfilePage({ params }: SellerPageProps) {
         </span>
         <div>
           <h1 className="flex items-center gap-1.5 font-heading text-xl font-bold text-ink">
-            {seller.full_name || "OneBazaar seller"}
+            {seller.full_name || "Sellox seller"}
             {seller.is_verified && (
               <BadgeCheck className="h-5 w-5 text-success" aria-label="Verified seller" />
             )}

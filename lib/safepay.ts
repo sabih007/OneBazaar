@@ -74,7 +74,7 @@ export function buildSafepayCheckoutUrl({
   url.searchParams.set("beacon", token);
   url.searchParams.set("env", ENVIRONMENT);
   url.searchParams.set("order_id", orderId);
-  url.searchParams.set("source", "OneBazaar");
+  url.searchParams.set("source", "Sellox");
   url.searchParams.set("redirect_url", redirectUrl);
   url.searchParams.set("cancel_url", cancelUrl);
   return url.toString();

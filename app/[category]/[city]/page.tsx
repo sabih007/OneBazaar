@@ -27,8 +27,8 @@ export async function generateMetadata({ params }: BrowsePageProps): Promise<Met
   const city = getCity(citySlug);
   if (!category || !city) return {};
 
-  const title = `${category.name} in ${city.name} — Buy & Sell | OneBazaar`;
-  const description = `Find the best deals on ${category.name.toLowerCase()} in ${city.name}. Browse verified listings on OneBazaar. Post your ad free.`;
+  const title = `${category.name} in ${city.name} — Buy & Sell | Sellox`;
+  const description = `Find the best deals on ${category.name.toLowerCase()} in ${city.name}. Browse verified listings on Sellox. Post your ad free.`;
 
   return {
     title,

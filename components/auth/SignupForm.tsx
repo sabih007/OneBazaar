@@ -45,8 +45,8 @@ export default function SignupForm() {
     }
 
     const redirect = searchParams.get("redirect") || "/";
-    router.push(redirect);
-    router.refresh();
+    const params = new URLSearchParams({ email: values.email, redirect });
+    router.push(`/verify?${params.toString()}`);
   }
 
   return (
@@ -105,6 +105,18 @@ export default function SignupForm() {
         <Button type="submit" className="w-full" disabled={isSubmitting}>
           {isSubmitting ? "Creating account…" : "Sign up"}
         </Button>
+
+        <p className="text-center text-xs text-ink-muted">
+          By signing up, you agree to our{" "}
+          <Link href="/terms" className="font-medium text-primary hover:text-primary-hover">
+            Terms &amp; Conditions
+          </Link>{" "}
+          and{" "}
+          <Link href="/privacy" className="font-medium text-primary hover:text-primary-hover">
+            Privacy Policy
+          </Link>
+          .
+        </p>
       </form>
 
       <p className="mt-6 text-center text-sm text-ink-muted">
