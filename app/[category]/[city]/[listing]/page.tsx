@@ -127,7 +127,7 @@ export default async function ListingDetailPage({ params }: ListingPageProps) {
   ];
 
   return (
-    <div className="container-app py-6">
+    <div className="container-app py-8">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -155,20 +155,20 @@ export default async function ListingDetailPage({ params }: ListingPageProps) {
 
       <Breadcrumbs items={breadcrumbs} />
 
-      <div className="mt-4 grid grid-cols-1 gap-6 lg:grid-cols-3">
+      <div className="mt-5 grid grid-cols-1 gap-8 lg:grid-cols-3">
         <div className="lg:col-span-2">
           <Gallery images={listing.images} title={listing.title} />
 
-          <div className="mt-5">
+          <div className="mt-5 rounded-[var(--radius-lg)] border border-line bg-surface p-5 shadow-[var(--shadow-card)] sm:p-6">
             <div className="flex items-center gap-2">
               {listing.badge && <PromoBadge badge={listing.badge} />}
               {listing.status === "sold" && (
-                <span className="rounded-full bg-success px-2.5 py-1 text-xs font-semibold text-white">
+                <span className="rounded-full bg-success px-2.5 py-1 text-xs font-semibold text-white shadow-sm">
                   Sold
                 </span>
               )}
             </div>
-            <p className="mt-2 font-heading text-3xl font-bold text-ink">
+            <p className="mt-3 font-heading text-4xl font-bold text-ink">
               {formatPKR(listing.price)}
             </p>
             <h1 className="mt-1 text-lg font-semibold text-ink">{listing.title}</h1>

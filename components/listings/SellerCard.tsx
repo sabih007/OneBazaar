@@ -17,9 +17,9 @@ export default function SellerCard({ seller, listingId, isOwner, isLoggedIn, use
   if (!seller) return null;
 
   return (
-    <div className="rounded-md border border-line bg-surface p-5 shadow-[var(--shadow-card)]">
+    <div className="rounded-[var(--radius-lg)] border border-line bg-surface p-5 shadow-[var(--shadow-card)]">
       <Link href={`/seller/${seller.id}`} className="flex items-center gap-3">
-        <span className="flex h-11 w-11 items-center justify-center rounded-full bg-primary-light text-base font-semibold text-primary">
+        <span className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary-hover text-base font-semibold text-white shadow-sm">
           {(seller.full_name || "S").charAt(0).toUpperCase()}
         </span>
         <div className="min-w-0">
@@ -36,7 +36,7 @@ export default function SellerCard({ seller, listingId, isOwner, isLoggedIn, use
       </Link>
 
       {!isOwner && (
-        <div className="mt-4 space-y-2">
+        <div className="mt-4 space-y-2 border-t border-line pt-4">
           <ChatButton listingId={listingId} sellerId={seller.id} userId={userId} />
           <RevealPhoneButton listingId={listingId} isLoggedIn={isLoggedIn} />
         </div>

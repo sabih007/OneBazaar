@@ -89,7 +89,7 @@ export default function MyListingRow({
         </p>
       </div>
 
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-3">
         <Link href={`/post/${listing.id}/promote`}>
           <Button size="sm" variant="secondary" className="gap-1.5">
             <Sparkles className="h-3.5 w-3.5" /> Promote

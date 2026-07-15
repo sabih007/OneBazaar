@@ -5,10 +5,13 @@ type Variant = "primary" | "secondary" | "ghost" | "danger";
 type Size = "sm" | "md" | "lg";
 
 const variantClasses: Record<Variant, string> = {
-  primary: "bg-primary text-white hover:bg-primary-hover",
-  secondary: "bg-surface text-ink border border-line hover:bg-background",
-  ghost: "bg-transparent text-ink hover:bg-background",
-  danger: "bg-danger text-white hover:bg-danger/90",
+  primary:
+    "bg-primary text-white shadow-[var(--shadow-card)] hover:bg-primary-hover hover:-translate-y-0.5 hover:shadow-[var(--shadow-card-hover)] active:translate-y-0 active:shadow-[var(--shadow-card)]",
+  secondary:
+    "bg-surface text-ink border border-line hover:border-primary/40 hover:bg-primary-light hover:text-primary hover:-translate-y-0.5 hover:shadow-[var(--shadow-card)] active:translate-y-0 active:shadow-none",
+  ghost: "bg-transparent text-ink hover:bg-primary-light hover:text-primary",
+  danger:
+    "bg-danger text-white shadow-[var(--shadow-card)] hover:bg-danger/90 hover:-translate-y-0.5 hover:shadow-[var(--shadow-card-hover)] active:translate-y-0 active:shadow-[var(--shadow-card)]",
 };
 
 const sizeClasses: Record<Size, string> = {
@@ -28,7 +31,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       <button
         ref={ref}
         className={cn(
-          "inline-flex items-center justify-center gap-2 rounded-md font-body font-medium transition-colors duration-200 disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
+          "inline-flex items-center justify-center gap-2 rounded-md font-body font-medium transition-all duration-200 disabled:opacity-50 disabled:pointer-events-none disabled:translate-y-0 disabled:shadow-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
           variantClasses[variant],
           sizeClasses[size],
           className

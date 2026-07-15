@@ -1,14 +1,14 @@
 @import "tailwindcss";
 
 :root {
-  --color-primary: #1b4ef5;
-  --color-primary-hover: #1642d6;
-  --color-primary-light: #e8edfe;
-  --color-background: #f5f5f5;
-  --color-surface: #ffffff;
+  --color-primary: #037971;
+  --color-primary-hover: #023436;
+  --color-primary-light: #dff3f1;
+  --color-background: #eef4f3;
+  --color-surface: #fafcfc;
   --color-ink: #1a1a1a;
   --color-ink-muted: #6b7280;
-  --color-line: #e5e7eb;
+  --color-line: #dfe8e7;
   --color-success: #16a34a;
   --color-warning: #f59e0b;
   --color-danger: #dc2626;
@@ -33,10 +33,12 @@
   --font-body: var(--font-poppins), sans-serif;
 
   --radius-md: 10px;
+  --radius-lg: 16px;
   --radius-full: 9999px;
 
-  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.08);
-  --shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --shadow-card: 0 1px 2px rgba(16, 24, 40, 0.04), 0 1px 3px rgba(16, 24, 40, 0.06);
+  --shadow-card-hover: 0 8px 24px -6px rgba(16, 24, 40, 0.14), 0 2px 8px rgba(16, 24, 40, 0.06);
+  --shadow-elevated: 0 24px 48px -16px rgba(16, 24, 40, 0.22), 0 4px 12px rgba(16, 24, 40, 0.08);
 }
 
 body {

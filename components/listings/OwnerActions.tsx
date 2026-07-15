@@ -47,7 +47,7 @@ export default function OwnerActions({
   return (
     <div className="rounded-md border border-line bg-surface p-5 shadow-[var(--shadow-card)]">
       <p className="mb-3 text-sm font-semibold text-ink">Manage your listing</p>
-      <div className="space-y-2">
+      <div className="space-y-3">
         <Link href={`/post/${listingId}/promote`}>
           <Button className="w-full gap-2">
             <Sparkles className="h-4 w-4" aria-hidden />

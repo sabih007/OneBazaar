@@ -19,6 +19,7 @@ import { isSupabaseConfigured } from "@/lib/supabase/is-configured";
 import ListingGrid from "@/components/listings/ListingGrid";
 import AdSlot from "@/components/ads/AdSlot";
 import { AD_SLOTS } from "@/lib/ads";
+import SearchBar from "@/components/layout/SearchBar";
 
 const categoryIcons: Record<string, React.ComponentType<{ className?: string }>> = {
   "property-for-sale": Building2,
@@ -49,21 +50,35 @@ export default async function Home() {
 
   return (
     <div>
-      <section className="border-b border-line bg-gradient-to-b from-primary-light/60 to-background">
-        <div className="container-app py-14 text-center sm:py-20">
-          <h1 className="font-heading text-3xl font-bold tracking-tight text-ink sm:text-5xl">
+      <section className="relative overflow-hidden border-b border-line bg-gradient-to-b from-primary-light/70 via-primary-light/20 to-background">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -left-24 -top-24 h-72 w-72 rounded-full bg-primary/20 blur-3xl"
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -right-16 top-8 h-64 w-64 rounded-full bg-gold/20 blur-3xl"
+        />
+
+        <div className="container-app relative py-16 text-center sm:py-24">
+          <h1 className="font-heading text-4xl font-bold tracking-tight text-ink sm:text-6xl">
             Buy &amp; sell anything, <span className="text-primary">near you</span>
           </h1>
-          <p className="mx-auto mt-3 max-w-xl text-sm text-ink-muted sm:text-base">
+          <p className="mx-auto mt-4 max-w-xl text-sm text-ink-muted sm:text-base">
             Houses, cars, mobiles, and more — across Karachi, Lahore, Islamabad, and every major
             city in Pakistan.
           </p>
+
+          <div className="mx-auto mt-8 max-w-xl">
+            <SearchBar />
+          </div>
+
           <div className="mx-auto mt-6 flex max-w-md flex-wrap justify-center gap-2">
             {cities.slice(0, 6).map((c) => (
               <Link
                 key={c.slug}
                 href={`/vehicles/${c.slug}`}
-                className="rounded-full border border-line bg-surface px-3.5 py-1.5 text-xs font-medium text-ink-muted transition-colors hover:border-primary hover:text-primary"
+                className="rounded-full border border-line bg-surface/80 px-3.5 py-1.5 text-xs font-medium text-ink-muted backdrop-blur transition-all hover:-translate-y-0.5 hover:border-primary hover:text-primary hover:shadow-[var(--shadow-card)]"
               >
                 {c.name}
               </Link>
@@ -72,18 +87,18 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="container-app py-10">
-        <h2 className="font-heading text-xl font-semibold text-ink">Browse categories</h2>
-        <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5">
+      <section className="container-app py-12">
+        <h2 className="font-heading text-2xl font-semibold text-ink">Browse categories</h2>
+        <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 md:grid-cols-5">
           {categories.map((c) => {
             const Icon = categoryIcons[c.slug] ?? Building2;
             return (
               <Link
                 key={c.slug}
                 href={`/${c.slug}/lahore`}
-                className="group flex flex-col items-center gap-2.5 rounded-md border border-line bg-surface p-5 text-center shadow-[var(--shadow-card)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[var(--shadow-card-hover)]"
+                className="group flex flex-col items-center gap-3 rounded-[var(--radius-lg)] border border-line bg-surface p-5 text-center shadow-[var(--shadow-card)] transition-all duration-300 hover:-translate-y-1 hover:border-primary/20 hover:shadow-[var(--shadow-card-hover)]"
               >
-                <span className="flex h-11 w-11 items-center justify-center rounded-full bg-primary-light text-primary transition-colors group-hover:bg-primary group-hover:text-white">
+                <span className="flex h-12 w-12 items-center justify-center rounded-full bg-primary-light text-primary transition-colors duration-300 group-hover:bg-primary group-hover:text-white">
                   <Icon className="h-5 w-5" />
                 </span>
                 <span className="text-sm font-medium text-ink">{c.name}</span>
@@ -98,17 +113,29 @@ export default async function Home() {
       </div>
 
       {featured.length > 0 && (
-        <section className="container-app py-10">
-          <h2 className="font-heading text-xl font-semibold text-ink">Featured listings</h2>
-          <div className="mt-4">
-            <ListingGrid listings={featured} />
+        <section className="border-t border-line bg-surface/60 py-12">
+          <div className="container-app">
+            <div className="flex items-center justify-between">
+              <h2 className="font-heading text-2xl font-semibold text-ink">Featured listings</h2>
+              <Link href="/search" className="text-sm font-medium text-primary hover:text-primary-hover">
+                View all
+              </Link>
+            </div>
+            <div className="mt-5">
+              <ListingGrid listings={featured} />
+            </div>
           </div>
         </section>
       )}
 
-      <section className="container-app py-10">
-        <h2 className="font-heading text-xl font-semibold text-ink">Latest listings</h2>
-        <div className="mt-4">
+      <section className="container-app py-12">
+        <div className="flex items-center justify-between">
+          <h2 className="font-heading text-2xl font-semibold text-ink">Latest listings</h2>
+          <Link href="/search" className="text-sm font-medium text-primary hover:text-primary-hover">
+            View all
+          </Link>
+        </div>
+        <div className="mt-5">
           <ListingGrid
             listings={latest}
             emptyTitle="No listings yet"

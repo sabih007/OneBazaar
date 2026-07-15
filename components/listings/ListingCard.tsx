@@ -44,16 +44,16 @@ export default function ListingCard({ listing, userId, isFavorited = false }: Li
   return (
     <Link
       href={href}
-      className="group block overflow-hidden rounded-md border border-line bg-surface shadow-[var(--shadow-card)] transition-shadow duration-200 hover:shadow-[var(--shadow-card-hover)]"
+      className="group block overflow-hidden rounded-[var(--radius-lg)] border border-line bg-surface shadow-[var(--shadow-card)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[var(--shadow-card-hover)]"
     >
-      <div className="relative aspect-[4/3] w-full bg-background">
+      <div className="relative aspect-[4/3] w-full overflow-hidden bg-background">
         {cover ? (
           <Image
             src={cover}
             alt={listing.title}
             fill
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
-            className="object-cover"
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center text-ink-muted">
@@ -67,7 +67,7 @@ export default function ListingCard({ listing, userId, isFavorited = false }: Li
           onClick={onToggleFavorite}
           aria-label={favorited ? "Remove from favorites" : "Save to favorites"}
           aria-pressed={favorited}
-          className="absolute right-2 top-2 flex h-9 w-9 items-center justify-center rounded-full bg-surface/90 backdrop-blur transition-transform duration-150 hover:scale-105"
+          className="absolute right-2 top-2 flex h-9 w-9 items-center justify-center rounded-full bg-surface/90 shadow-sm backdrop-blur transition-transform duration-150 hover:scale-105"
         >
           <Heart
             className={cn("h-4.5 w-4.5", favorited ? "fill-danger text-danger" : "text-ink-muted")}
@@ -75,12 +75,12 @@ export default function ListingCard({ listing, userId, isFavorited = false }: Li
         </button>
       </div>
 
-      <div className="p-3">
+      <div className="p-3.5">
         <p className="font-heading text-lg font-bold text-ink">{formatPKR(listing.price)}</p>
-        <h3 className="mt-0.5 truncate text-sm text-ink" title={listing.title}>
+        <h3 className="mt-1 truncate text-sm text-ink" title={listing.title}>
           {listing.title}
         </h3>
-        <p className="mt-1 truncate text-xs text-ink-muted">
+        <p className="mt-1.5 truncate text-xs text-ink-muted">
           {listing.city}
           {listing.area ? `, ${listing.area}` : ""} ·{" "}
           {formatDistanceToNow(new Date(listing.created_at), { addSuffix: true })}
