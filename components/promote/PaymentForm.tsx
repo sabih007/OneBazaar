@@ -42,13 +42,13 @@ export default function PaymentForm({
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ listingId, packageId: pkg.id }),
         });
-        const json = await res.json();
-        if (!res.ok || !json.checkoutUrl) {
-          throw new Error(json.error ?? "Could not start Safepay checkout");
+        const json = await res.json().catch(() => null);
+        if (!res.ok || !json?.checkoutUrl) {
+          throw new Error(json?.error ?? "Couldn't start checkout. Please try again.");
         }
         window.location.href = json.checkoutUrl; // leaves the app — Safepay redirects back to /api/safepay/callback
-      } catch {
-        setError("Couldn't start checkout. Please try again.");
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Couldn't start checkout. Please try again.");
         setSubmitting(false);
       }
       return;
