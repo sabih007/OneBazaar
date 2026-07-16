@@ -95,3 +95,16 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--color-primary);
   text-decoration: underline;
 }
+
+@keyframes loader-bar {
+  0% {
+    transform: translateX(-110%);
+  }
+  100% {
+    transform: translateX(340%);
+  }
+}
+
+.animate-loader-bar {
+  animation: loader-bar 1.3s ease-in-out infinite;
+}
