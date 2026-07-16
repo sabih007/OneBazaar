@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient, getUser } from "@/lib/supabase/server";
+import { getUser } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { markPromotionPaid, markPromotionFailed } from "@/lib/promotions";
 import { getSafepayTrackerStatus } from "@/lib/safepay";
 
@@ -8,6 +9,11 @@ import { getSafepayTrackerStatus } from "@/lib/safepay";
  * don't trust anything Safepay appends to the URL — `promotionId`/`listingId`/
  * `token` are ones we generated ourselves in /api/safepay/checkout, and payment
  * status is confirmed with a server-to-server call, not the redirect itself.
+ *
+ * The actual DB write uses the service-role admin client, not a user-session
+ * client — migration 0008 removed the RLS policy that let a user update their
+ * own `ad_promotions` row, since that same policy was also a free-promotion
+ * bypass (a user could flip their own pending row to "paid" without paying).
  */
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = request.nextUrl;
@@ -24,7 +30,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(`${origin}/login?redirect=/me/promotions`);
   }
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
 
   try {
     const status = await getSafepayTrackerStatus(token);

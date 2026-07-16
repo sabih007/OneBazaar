@@ -70,41 +70,6 @@ export interface PurchasePromotionInput {
   paymentMethod: PaymentMethod;
 }
 
-/** Mock/manual payment — settles instantly, no external gateway round trip (§6 MVP path). */
-export async function purchasePromotion(
-  supabase: SupabaseClient,
-  { listingId, userId, packageId, paymentMethod }: PurchasePromotionInput
-) {
-  const { data: pkg, error: pkgError } = await supabase
-    .from("packages")
-    .select("*")
-    .eq("id", packageId)
-    .single();
-  if (pkgError) throw pkgError;
-  const packageRow = pkg as Package;
-
-  const now = new Date();
-  const { data: promotion, error: insertError } = await supabase
-    .from("ad_promotions")
-    .insert({
-      listing_id: listingId,
-      user_id: userId,
-      package_id: packageId,
-      starts_at: now.toISOString(),
-      expires_at: computeExpiresAt(packageRow).toISOString(),
-      amount: packageRow.price,
-      payment_method: paymentMethod,
-      payment_status: "paid",
-    })
-    .select()
-    .single();
-  if (insertError) throw insertError;
-
-  await applyPackageToListing(supabase, { listingId, packageRow });
-
-  return promotion as AdPromotion;
-}
-
 /** Starts a real-gateway purchase: records the attempt as `pending` before redirecting off-site. */
 export async function createPendingPromotion(
   supabase: SupabaseClient,

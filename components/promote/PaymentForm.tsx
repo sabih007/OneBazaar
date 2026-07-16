@@ -1,88 +1,41 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { CheckCircle2, Wallet, CreditCard } from "lucide-react";
+import { Wallet, CreditCard } from "lucide-react";
 import type { Package, PaymentMethod } from "@/types/database";
-import { createClient } from "@/lib/supabase/client";
-import { purchasePromotion } from "@/lib/promotions";
 import { formatPKR, cn } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
 
 const methods: { value: PaymentMethod; label: string; icon: typeof Wallet; enabled: boolean }[] = [
   { value: "card", label: "Card (Safepay)", icon: CreditCard, enabled: true },
-  { value: "mock", label: "Mock payment (dev only)", icon: CheckCircle2, enabled: true },
   { value: "jazzcash", label: "JazzCash", icon: Wallet, enabled: false },
   { value: "easypaisa", label: "Easypaisa", icon: Wallet, enabled: false },
 ];
 
-export default function PaymentForm({
-  listingId,
-  userId,
-  pkg,
-}: {
-  listingId: string;
-  userId: string;
-  pkg: Package;
-}) {
-  const router = useRouter();
+export default function PaymentForm({ listingId, pkg }: { listingId: string; pkg: Package }) {
   const [method, setMethod] = useState<PaymentMethod>("card");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [done, setDone] = useState(false);
 
   async function onConfirm() {
     setSubmitting(true);
     setError(null);
 
-    if (method === "card") {
-      try {
-        const res = await fetch("/api/safepay/checkout", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ listingId, packageId: pkg.id }),
-        });
-        const json = await res.json().catch(() => null);
-        if (!res.ok || !json?.checkoutUrl) {
-          throw new Error(json?.error ?? "Couldn't start checkout. Please try again.");
-        }
-        window.location.href = json.checkoutUrl; // leaves the app — Safepay redirects back to /api/safepay/callback
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Couldn't start checkout. Please try again.");
-        setSubmitting(false);
-      }
-      return;
-    }
-
     try {
-      await purchasePromotion(createClient(), {
-        listingId,
-        userId,
-        packageId: pkg.id,
-        paymentMethod: method,
+      const res = await fetch("/api/safepay/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ listingId, packageId: pkg.id }),
       });
-      setDone(true);
-      router.refresh();
-    } catch {
-      setError("Payment failed. Please try again.");
-    } finally {
+      const json = await res.json().catch(() => null);
+      if (!res.ok || !json?.checkoutUrl) {
+        throw new Error(json?.error ?? "Couldn't start checkout. Please try again.");
+      }
+      window.location.href = json.checkoutUrl; // leaves the app — Safepay redirects back to /api/safepay/callback
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Couldn't start checkout. Please try again.");
       setSubmitting(false);
     }
-  }
-
-  if (done) {
-    return (
-      <div className="rounded-md border border-success/30 bg-success/10 p-5 text-center">
-        <CheckCircle2 className="mx-auto h-8 w-8 text-success" aria-hidden />
-        <p className="mt-2 font-heading text-lg font-semibold text-ink">Promotion active</p>
-        <p className="mt-1 text-sm text-ink-muted">
-          {pkg.name} is now applied to your listing.
-        </p>
-        <Button className="mt-4" onClick={() => router.push("/me/promotions")}>
-          View my promotions
-        </Button>
-      </div>
-    );
   }
 
   return (
@@ -115,11 +68,7 @@ export default function PaymentForm({
           <p className="font-heading text-xl font-bold text-ink">{formatPKR(pkg.price)}</p>
         </div>
         <Button onClick={onConfirm} disabled={submitting} className="gap-2">
-          {submitting
-            ? "Processing…"
-            : method === "card"
-              ? "Continue to Safepay"
-              : `Pay ${formatPKR(pkg.price)}`}
+          {submitting ? "Processing…" : "Continue to Safepay"}
         </Button>
       </div>
 

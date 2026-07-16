@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
 import { Select } from "@/components/ui/Select";
+import GoogleSignInButton from "@/components/auth/GoogleSignInButton";
 
 export default function SignupForm() {
   const router = useRouter();
@@ -53,6 +54,16 @@ export default function SignupForm() {
     <div>
       <h1 className="font-heading text-2xl font-semibold text-ink">Sign up</h1>
       <p className="mt-1 text-sm text-ink-muted">Create an account to post and manage listings.</p>
+
+      <div className="mt-6">
+        <GoogleSignInButton redirect={searchParams.get("redirect") || "/"} />
+      </div>
+
+      <div className="mt-6 flex items-center gap-3">
+        <div className="h-px flex-1 bg-line" />
+        <span className="text-xs text-ink-muted">or</span>
+        <div className="h-px flex-1 bg-line" />
+      </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-4">
         <div>

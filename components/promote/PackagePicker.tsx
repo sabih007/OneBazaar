@@ -20,11 +20,9 @@ const GROUP_ORDER: Package["key"][] = ["top", "featured", "urgent", "bump"];
 export default function PackagePicker({
   listing,
   packages,
-  userId,
 }: {
   listing: Listing;
   packages: Package[];
-  userId: string;
 }) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
@@ -86,9 +84,7 @@ export default function PackagePicker({
         </div>
       ))}
 
-      {selectedPackage && (
-        <PaymentForm listingId={listing.id} userId={userId} pkg={selectedPackage} />
-      )}
+      {selectedPackage && <PaymentForm listingId={listing.id} pkg={selectedPackage} />}
     </div>
   );
 }

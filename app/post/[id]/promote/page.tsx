@@ -76,7 +76,7 @@ export default async function PromoteListingPage({
         </div>
       )}
 
-      <PackagePicker listing={listing as Listing} packages={packages} userId={user.id} />
+      <PackagePicker listing={listing as Listing} packages={packages} />
     </div>
   );
 }
