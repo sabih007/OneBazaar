@@ -22,6 +22,8 @@ import AdSlot from "@/components/ads/AdSlot";
 import { AD_SLOTS } from "@/lib/ads";
 import SearchBar from "@/components/layout/SearchBar";
 
+export const revalidate = 60;
+
 const categoryIcons: Record<string, React.ComponentType<{ className?: string }>> = {
   "property-for-sale": Building2,
   "property-for-rent": HomeIcon,
