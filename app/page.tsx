@@ -9,6 +9,7 @@ import {
   Shirt,
   Factory,
   Home as HomeIcon,
+  ArrowRight,
 } from "lucide-react";
 import { categories } from "@/lib/categories";
 import { cities } from "@/lib/cities";
@@ -117,8 +118,12 @@ export default async function Home() {
           <div className="container-app">
             <div className="flex items-center justify-between">
               <h2 className="font-heading text-2xl font-semibold text-ink">Featured listings</h2>
-              <Link href="/search" className="text-sm font-medium text-primary hover:text-primary-hover">
+              <Link
+                href="/search"
+                className="inline-flex items-center gap-1 rounded-full bg-primary-light px-3.5 py-1.5 text-sm font-medium text-primary transition-colors hover:bg-primary hover:text-white"
+              >
                 View all
+                <ArrowRight className="h-3.5 w-3.5" aria-hidden />
               </Link>
             </div>
             <div className="mt-5">
