@@ -59,7 +59,7 @@ export default async function InboxPage() {
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-medium text-ink">
-                    {nameById.get(otherId) || "Sellox user"}
+                    {nameById.get(otherId) || "Buysellox.com user"}
                   </p>
                   <p className="truncate text-xs text-ink-muted">{c.listing?.title}</p>
                 </div>

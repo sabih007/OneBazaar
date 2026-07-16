@@ -49,7 +49,7 @@ export async function generateMetadata({ params }: ListingPageProps): Promise<Me
   if (!listing) return {};
 
   const city = getCity(citySlug);
-  const title = `${listing.title} in ${city?.name ?? listing.city} — Rs. ${new Intl.NumberFormat("en-PK").format(listing.price)} | Sellox`;
+  const title = `${listing.title} in ${city?.name ?? listing.city} — Rs. ${new Intl.NumberFormat("en-PK").format(listing.price)} | Buysellox.com`;
   const description = listing.description.slice(0, 150);
   const url = `/${listing.category_slug}/${listing.city_slug}/${listing.slug}`;
 

@@ -1,4 +1,4 @@
--- OneBazaar — initial schema (§7 of OneBazaar-Spec.md)
+-- Buysellox.com — initial schema (§7 of OneBazaar-Spec.md)
 -- Run in the Supabase SQL editor, or via `supabase db push` once the project is linked.
 
 create extension if not exists "pgcrypto";

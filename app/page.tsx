@@ -144,7 +144,7 @@ export default async function Home() {
           <ListingGrid
             listings={latest}
             emptyTitle="No listings yet"
-            emptyDescription="Be the first to post an ad on Sellox."
+            emptyDescription="Be the first to post an ad on Buysellox.com."
           />
         </div>
       </section>

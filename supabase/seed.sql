@@ -1,4 +1,4 @@
--- OneBazaar — seed data for the packages store (§6). Cities and categories are
+-- Buysellox.com — seed data for the packages store (§6). Cities and categories are
 -- kept as static config in lib/cities.ts and lib/categories.ts, not DB tables.
 
 insert into public.packages (key, name, badge, promotion_rank, duration_days, price, is_active) values

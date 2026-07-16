@@ -1,4 +1,4 @@
--- OneBazaar — expiry for promotions (§6). Called as a check-on-read RPC from
+-- Buysellox.com — expiry for promotions (§6). Called as a check-on-read RPC from
 -- the listing read paths (lib/promotions.ts#expireStalePromotions) since this
 -- project has no scheduled job runner.
 

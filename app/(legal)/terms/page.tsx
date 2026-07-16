@@ -10,16 +10,16 @@ export default function TermsPage() {
       <h1>Terms &amp; Conditions</h1>
       <p>
         Last updated: 15 July 2026. These Terms &amp; Conditions (&quot;Terms&quot;) also serve as
-        our Terms of Use and govern your access to and use of Sellox (&quot;Sellox&quot;,
+        our Terms of Use and govern your access to and use of Buysellox.com (&quot;Buysellox.com&quot;,
         &quot;we&quot;, &quot;us&quot;). By creating an account, posting a listing, or otherwise
-        using Sellox, you agree to these Terms. If you do not agree, please do not use Sellox.
+        using Buysellox.com, you agree to these Terms. If you do not agree, please do not use Buysellox.com.
       </p>
 
-      <h2>1. What Sellox Is</h2>
+      <h2>1. What Buysellox.com Is</h2>
       <p>
-        Sellox is an online classifieds marketplace that lets users in Pakistan post, browse, and
+        Buysellox.com is an online classifieds marketplace that lets users in Pakistan post, browse, and
         respond to listings for items such as property, vehicles, mobiles, electronics, and other
-        goods. Sellox provides the platform only — we are not a party to, and do not guarantee,
+        goods. Buysellox.com provides the platform only — we are not a party to, and do not guarantee,
         any transaction between a buyer and a seller.
       </p>
 
@@ -44,7 +44,7 @@ export default function TermsPage() {
           illegal to sell or own in Pakistan.
         </li>
         <li>
-          By posting, you grant Sellox a non-exclusive, royalty-free licence to display your
+          By posting, you grant Buysellox.com a non-exclusive, royalty-free licence to display your
           listing text and images on the platform (and in search results) for as long as the
           listing is active.
         </li>
@@ -53,7 +53,7 @@ export default function TermsPage() {
 
       <h2>4. Buyer–Seller Transactions</h2>
       <p>
-        Sellox does not inspect, verify, or take custody of items listed on the platform, and does
+        Buysellox.com does not inspect, verify, or take custody of items listed on the platform, and does
         not act as an escrow or guarantee payment. Meet in safe, public locations, inspect goods
         before paying, and never send money in advance to a stranger. See our in-app safety notice
         on listing pages for more guidance. Any dispute over an item or payment is between the
@@ -73,13 +73,13 @@ export default function TermsPage() {
           Sellers may purchase a package to promote a listing (badge, higher ranking, or extended
           duration). Prices are shown before checkout.
         </li>
-        <li>Payments are processed by a third-party payment gateway; Sellox does not store your card details.</li>
+        <li>Payments are processed by a third-party payment gateway; Buysellox.com does not store your card details.</li>
         <li>Promotion fees are non-refundable once a listing has been promoted, except where required by law.</li>
       </ul>
 
       <h2>7. Advertising</h2>
       <p>
-        Sellox may display third-party advertisements (for example, via Google AdSense) alongside
+        Buysellox.com may display third-party advertisements (for example, via Google AdSense) alongside
         listings. We are not responsible for the content of, or any transaction arising from, a
         third-party ad. Ad providers may use cookies as described in our Privacy Policy.
       </p>
@@ -93,27 +93,27 @@ export default function TermsPage() {
 
       <h2>9. Intellectual Property</h2>
       <p>
-        The Sellox name, logo, and site design belong to us. You retain ownership of the content
+        The Buysellox.com name, logo, and site design belong to us. You retain ownership of the content
         you post, subject to the licence granted in Section 3.
       </p>
 
       <h2>10. Disclaimer of Warranties</h2>
       <p>
-        Sellox is provided &quot;as is&quot; without warranties of any kind, express or implied. We
+        Buysellox.com is provided &quot;as is&quot; without warranties of any kind, express or implied. We
         do not guarantee that listings are accurate, that the service will be uninterrupted, or
         that any transaction will be completed successfully.
       </p>
 
       <h2>11. Limitation of Liability</h2>
       <p>
-        To the fullest extent permitted by law, Sellox is not liable for any indirect, incidental,
+        To the fullest extent permitted by law, Buysellox.com is not liable for any indirect, incidental,
         or consequential damages, or for any loss arising from a transaction between users, arising
         out of your use of the platform.
       </p>
 
       <h2>12. Termination</h2>
       <p>
-        You may stop using Sellox and delete your account at any time from your profile settings.
+        You may stop using Buysellox.com and delete your account at any time from your profile settings.
         We may suspend or terminate your account if you violate these Terms.
       </p>
 
@@ -126,12 +126,12 @@ export default function TermsPage() {
       <h2>14. Changes to These Terms</h2>
       <p>
         We may update these Terms from time to time. We will update the &quot;Last updated&quot;
-        date above when we do. Continued use of Sellox after a change means you accept the updated
+        date above when we do. Continued use of Buysellox.com after a change means you accept the updated
         Terms.
       </p>
 
       <h2>15. Contact Us</h2>
-      <p>Questions about these Terms? Contact us at support@sellox.pk.</p>
+      <p>Questions about these Terms? Contact us at support@buysellox.com.</p>
     </>
   );
 }

@@ -21,11 +21,11 @@ const poppins = Poppins({
 
 export const metadata: Metadata = {
   title: {
-    default: "Sellox — Buy & Sell Anything in Pakistan",
-    template: "%s | Sellox",
+    default: "Buysellox.com — Buy & Sell Anything in Pakistan",
+    template: "%s | Buysellox.com",
   },
   description:
-    "Sellox is Pakistan's classifieds marketplace — buy and sell houses, cars, plots, mobiles, and more in Karachi, Lahore, Islamabad, and other major cities.",
+    "Buysellox.com is Pakistan's classifieds marketplace — buy and sell houses, cars, plots, mobiles, and more in Karachi, Lahore, Islamabad, and other major cities.",
 };
 
 export default function RootLayout({

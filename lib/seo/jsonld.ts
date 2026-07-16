@@ -1,4 +1,4 @@
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://sellox.pk";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://buysellox.com";
 
 export function breadcrumbListJsonLd(items: { name: string; url: string }[]) {
   return {
@@ -17,7 +17,7 @@ export function organizationJsonLd() {
   return {
     "@context": "https://schema.org",
     "@type": "Organization",
-    name: "Sellox",
+    name: "Buysellox.com",
     url: SITE_URL,
   };
 }
@@ -26,7 +26,7 @@ export function websiteJsonLd() {
   return {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    name: "Sellox",
+    name: "Buysellox.com",
     url: SITE_URL,
     potentialAction: {
       "@type": "SearchAction",

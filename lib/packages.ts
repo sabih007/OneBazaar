@@ -18,7 +18,7 @@ export const BADGE_LABEL: Record<Exclude<Badge, null>, string> = {
   urgent: "Urgent",
 };
 
-/** Tailwind color tokens per badge, matching the Sellox design system (§3). */
+/** Tailwind color tokens per badge, matching the Buysellox.com design system (§3). */
 export const BADGE_COLOR: Record<Exclude<Badge, null>, { bg: string; text: string }> = {
   top: { bg: "bg-gold", text: "text-white" },
   featured: { bg: "bg-primary", text: "text-white" },

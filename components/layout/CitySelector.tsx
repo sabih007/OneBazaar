@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { MapPin } from "lucide-react";
 import { cities } from "@/lib/cities";
 
-const STORAGE_KEY = "sellox:city";
+const STORAGE_KEY = "buysellox:city";
 
 export default function CitySelector() {
   const [city, setCity] = useState("Lahore");

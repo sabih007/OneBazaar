@@ -1,4 +1,4 @@
--- OneBazaar — allow a user to update their own ad_promotions rows (§6).
+-- Buysellox.com — allow a user to update their own ad_promotions rows (§6).
 -- Needed so the Safepay callback route (running as the authenticated buyer)
 -- can flip a `pending` promotion to `paid`/`failed` after checkout.
 

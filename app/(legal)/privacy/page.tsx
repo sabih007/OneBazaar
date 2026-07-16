@@ -9,8 +9,8 @@ export default function PrivacyPage() {
     <>
       <h1>Privacy Policy</h1>
       <p>
-        Last updated: 15 July 2026. This Privacy Policy explains what information Sellox
-        (&quot;Sellox&quot;, &quot;we&quot;, &quot;us&quot;) collects, how we use it, and the
+        Last updated: 15 July 2026. This Privacy Policy explains what information Buysellox.com
+        (&quot;Buysellox.com&quot;, &quot;we&quot;, &quot;us&quot;) collects, how we use it, and the
         choices you have.
       </p>
 
@@ -37,7 +37,7 @@ export default function PrivacyPage() {
         </li>
         <li>
           <strong>Payment data:</strong> if you buy a promotion package, our payment gateway
-          processes your card/payment details directly — Sellox does not receive or store your
+          processes your card/payment details directly — Buysellox.com does not receive or store your
           full card number.
         </li>
       </ul>
@@ -56,14 +56,14 @@ export default function PrivacyPage() {
       <ul>
         <li>
           <strong>Other users:</strong> your name and listing details are visible to anyone
-          browsing Sellox. If you message another user, they see your name and message content.
+          browsing Buysellox.com. If you message another user, they see your name and message content.
         </li>
         <li>
           <strong>Service providers:</strong> we use Supabase for account authentication, database,
           and file storage, and a payment gateway (Safepay) to process promotion payments.
         </li>
         <li>
-          <strong>Advertising partners:</strong> Sellox may show ads through Google AdSense.
+          <strong>Advertising partners:</strong> Buysellox.com may show ads through Google AdSense.
           Google may use cookies or similar technology to serve ads based on your visits to this
           and other sites — see Google&apos;s own privacy policy for how it handles that data. You
           can opt out of personalized advertising through Google&apos;s Ads Settings.
@@ -100,7 +100,7 @@ export default function PrivacyPage() {
       </p>
 
       <h2>8. Children&apos;s Privacy</h2>
-      <p>Sellox is not intended for anyone under 18, and we do not knowingly collect data from children.</p>
+      <p>Buysellox.com is not intended for anyone under 18, and we do not knowingly collect data from children.</p>
 
       <h2>9. Changes to This Policy</h2>
       <p>
@@ -109,7 +109,7 @@ export default function PrivacyPage() {
       </p>
 
       <h2>10. Contact Us</h2>
-      <p>Questions about this Privacy Policy or your data? Contact us at support@sellox.pk.</p>
+      <p>Questions about this Privacy Policy or your data? Contact us at support@buysellox.com.</p>
     </>
   );
 }

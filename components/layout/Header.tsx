@@ -21,7 +21,7 @@ export default async function Header() {
     <header className="sticky top-0 z-30 border-b border-line bg-surface">
       <div className="container-app flex h-16 items-center gap-4">
         <Link href="/" className="shrink-0 font-heading text-2xl font-bold text-primary">
-          Sellox
+          Buysellox.com
         </Link>
 
         <div className="hidden flex-1 md:block">
