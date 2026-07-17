@@ -56,12 +56,16 @@ export async function generateMetadata({ params }: ListingPageProps): Promise<Me
   return {
     title,
     description,
+    keywords: [listing.title, `${listing.title} ${city?.name ?? listing.city}`, listing.category],
     alternates: { canonical: url },
     openGraph: {
       title,
       description,
       images: listing.images.slice(0, 1),
       url,
+      type: "website",
+      locale: "en_PK",
+      siteName: "Buysellox.com",
     },
     twitter: {
       card: "summary_large_image",
@@ -148,6 +152,9 @@ export default async function ListingDetailPage({ params }: ListingPageProps) {
               images: listing.images,
               status: listing.status,
               url: `/${listing.category_slug}/${listing.city_slug}/${listing.slug}`,
+              categorySlug: listing.category_slug,
+              city: listing.city,
+              condition: listing.condition,
             })
           ),
         }}

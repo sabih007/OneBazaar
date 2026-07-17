@@ -6,6 +6,8 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import QueryProvider from "@/components/providers/QueryProvider";
 import { ADSENSE_CLIENT_ID } from "@/lib/ads";
+import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/seo/site";
+import { organizationJsonLd, toJsonLdScript, websiteJsonLd } from "@/lib/seo/jsonld";
 
 const afacad = Afacad({
   variable: "--font-afacad",
@@ -20,12 +22,43 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: {
-    default: "Buysellox.com — Buy & Sell Anything in Pakistan",
-    template: "%s | Buysellox.com",
+    default: `${SITE_NAME} — Buy & Sell Anything in Pakistan | OLX Alternative`,
+    template: `%s | ${SITE_NAME}`,
   },
-  description:
-    "Buysellox.com is Pakistan's classifieds marketplace — buy and sell houses, cars, plots, mobiles, and more in Karachi, Lahore, Islamabad, and other major cities.",
+  description: SITE_DESCRIPTION,
+  keywords: [
+    "buy and sell Pakistan",
+    "online classifieds Pakistan",
+    "OLX Pakistan alternative",
+    "used cars for sale Pakistan",
+    "houses for sale Pakistan",
+    "free classified ads Pakistan",
+  ],
+  applicationName: SITE_NAME,
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, "max-image-preview": "large" },
+  },
+  alternates: { canonical: "/" },
+  openGraph: {
+    type: "website",
+    siteName: SITE_NAME,
+    title: `${SITE_NAME} — Buy & Sell Anything in Pakistan`,
+    description: SITE_DESCRIPTION,
+    url: SITE_URL,
+    locale: "en_PK",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${SITE_NAME} — Buy & Sell Anything in Pakistan`,
+    description: SITE_DESCRIPTION,
+  },
+  ...(process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION && {
+    verification: { google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION },
+  }),
 };
 
 export default function RootLayout({
@@ -34,8 +67,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${afacad.variable} ${poppins.variable} h-full`}>
+    <html lang="en-PK" className={`${afacad.variable} ${poppins.variable} h-full`}>
       <body className="min-h-full flex flex-col font-body antialiased bg-background text-ink">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: toJsonLdScript(organizationJsonLd()) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: toJsonLdScript(websiteJsonLd()) }}
+        />
         {ADSENSE_CLIENT_ID && (
           <Script
             async

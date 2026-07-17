@@ -6,7 +6,7 @@ import { getListings, type SortOption } from "@/lib/listings";
 import { expireStalePromotions } from "@/lib/promotions-server";
 import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/is-configured";
-import { breadcrumbListJsonLd, toJsonLdScript } from "@/lib/seo/jsonld";
+import { breadcrumbListJsonLd, itemListJsonLd, toJsonLdScript } from "@/lib/seo/jsonld";
 import Breadcrumbs from "@/components/layout/Breadcrumbs";
 import Filters from "@/components/listings/Filters";
 import ListingGrid from "@/components/listings/ListingGrid";
@@ -27,14 +27,22 @@ export async function generateMetadata({ params }: BrowsePageProps): Promise<Met
   const city = getCity(citySlug);
   if (!category || !city) return {};
 
-  const title = `${category.name} in ${city.name} — Buy & Sell | Buysellox.com`;
-  const description = `Find the best deals on ${category.name.toLowerCase()} in ${city.name}. Browse verified listings on Buysellox.com. Post your ad free.`;
+  const categoryLower = category.name.toLowerCase();
+  const title = `${category.name} in ${city.name} — Buy & Sell ${category.name} | Buysellox.com`;
+  const description = `Buy and sell ${categoryLower} in ${city.name}, Pakistan. Browse ${category.subcategories.length ? `${category.subcategories.map((s) => s.name.toLowerCase()).slice(0, 3).join(", ")} and more — ` : ""}thousands of verified listings with prices in Rs. on Buysellox.com. Post your ad free, no commission.`;
+  const canonical = `/${category.slug}/${city.slug}`;
 
   return {
     title,
     description,
-    alternates: { canonical: `/${category.slug}/${city.slug}` },
-    openGraph: { title, description },
+    keywords: [
+      `${categoryLower} in ${city.name.toLowerCase()}`,
+      `${categoryLower} for sale ${city.name.toLowerCase()}`,
+      `buy ${categoryLower} ${city.name.toLowerCase()}`,
+      `sell ${categoryLower} ${city.name.toLowerCase()}`,
+    ],
+    alternates: { canonical },
+    openGraph: { title, description, url: canonical, type: "website", locale: "en_PK" },
   };
 }
 
@@ -78,6 +86,21 @@ export default async function BrowsePage({ params, searchParams }: BrowsePagePro
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: toJsonLdScript(breadcrumbListJsonLd(breadcrumbs)) }}
       />
+      {listings.length > 0 && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: toJsonLdScript(
+              itemListJsonLd(
+                listings.map((l) => ({
+                  name: l.title,
+                  url: `/${l.category_slug}/${l.city_slug}/${l.slug}`,
+                }))
+              )
+            ),
+          }}
+        />
+      )}
 
       <Breadcrumbs
         items={[

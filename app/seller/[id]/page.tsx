@@ -18,7 +18,18 @@ export async function generateMetadata({ params }: SellerPageProps): Promise<Met
   const supabase = await createClient();
   const seller = await getPublicProfile(supabase, id);
   if (!seller) return {};
-  return { title: `${seller.full_name || "Seller"} — Buysellox.com` };
+
+  const name = seller.full_name || "Seller";
+  const location = seller.city ? ` in ${seller.city}` : "";
+  const title = `${name} — Seller Profile${location} | Buysellox.com`;
+  const description = `Browse active listings from ${name}${location} on Buysellox.com, Pakistan's classifieds marketplace.${seller.is_verified ? " Verified seller." : ""}`;
+
+  return {
+    title,
+    description,
+    alternates: { canonical: `/seller/${id}` },
+    openGraph: { title, description, type: "profile" },
+  };
 }
 
 export default async function SellerProfilePage({ params }: SellerPageProps) {
