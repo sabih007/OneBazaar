@@ -110,6 +110,11 @@ export default function Footer() {
               </Link>
             </li>
             <li>
+              <Link href="/partner" className="hover:text-primary">
+                Become our partner
+              </Link>
+            </li>
+            <li>
               <Link href="/terms" className="hover:text-primary">
                 Terms &amp; Conditions
               </Link>
