@@ -6,6 +6,7 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import QueryProvider from "@/components/providers/QueryProvider";
 import { ADSENSE_CLIENT_ID } from "@/lib/ads";
+import { GA_MEASUREMENT_ID } from "@/lib/analytics";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/seo/site";
 import { organizationJsonLd, toJsonLdScript, websiteJsonLd } from "@/lib/seo/jsonld";
 
@@ -84,6 +85,22 @@ export default function RootLayout({
             crossOrigin="anonymous"
             strategy="afterInteractive"
           />
+        )}
+        {GA_MEASUREMENT_ID && (
+          <>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+              strategy="afterInteractive"
+            />
+            <Script id="google-analytics" strategy="afterInteractive">
+              {`
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', '${GA_MEASUREMENT_ID}');
+              `}
+            </Script>
+          </>
         )}
         <QueryProvider>
           <Header />
