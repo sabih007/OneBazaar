@@ -10,6 +10,12 @@ import {
   Factory,
   Home as HomeIcon,
   ArrowRight,
+  ShieldCheck,
+  Tag,
+  MapPin,
+  CirclePlus,
+  MessageCircle,
+  Handshake,
 } from "lucide-react";
 import { categories } from "@/lib/categories";
 import { cities } from "@/lib/cities";
@@ -36,6 +42,24 @@ const categoryIcons: Record<string, React.ComponentType<{ className?: string }>>
   "fashion-beauty": Shirt,
   "business-industry": Factory,
 };
+
+const howItWorks = [
+  {
+    icon: CirclePlus,
+    title: "Post your ad",
+    description: "Create a free listing with photos in under a minute.",
+  },
+  {
+    icon: MessageCircle,
+    title: "Connect with buyers",
+    description: "Chat directly with interested, local buyers and sellers.",
+  },
+  {
+    icon: Handshake,
+    title: "Close the deal",
+    description: "Meet up safely and make the deal that works for you.",
+  },
+];
 
 export default async function Home() {
   let featured: Awaited<ReturnType<typeof getListings>>["listings"] = [];
@@ -87,6 +111,21 @@ export default async function Home() {
                 {c.name}
               </Link>
             ))}
+          </div>
+
+          <div className="mx-auto mt-8 flex max-w-2xl flex-wrap items-center justify-center gap-x-6 gap-y-3 text-sm text-ink-muted">
+            <span className="inline-flex items-center gap-2">
+              <ShieldCheck className="h-4 w-4 text-primary" aria-hidden />
+              Safe &amp; secure deals
+            </span>
+            <span className="inline-flex items-center gap-2">
+              <Tag className="h-4 w-4 text-primary" aria-hidden />
+              100% free to post
+            </span>
+            <span className="inline-flex items-center gap-2">
+              <MapPin className="h-4 w-4 text-primary" aria-hidden />
+              Every major city in Pakistan
+            </span>
           </div>
         </div>
       </section>
@@ -149,6 +188,65 @@ export default async function Home() {
             emptyTitle="No listings yet"
             emptyDescription="Be the first to post an ad on Buysellox.com."
           />
+        </div>
+      </section>
+
+      <section className="border-t border-line bg-surface/60 py-14">
+        <div className="container-app">
+          <div className="text-center">
+            <h2 className="font-heading text-2xl font-semibold text-ink sm:text-3xl">
+              How Buysellox works
+            </h2>
+            <p className="mx-auto mt-2 max-w-xl text-sm text-ink-muted">
+              Buy or sell in three simple steps.
+            </p>
+          </div>
+          <div className="mt-10 grid gap-6 sm:grid-cols-3">
+            {howItWorks.map((step, i) => {
+              const Icon = step.icon;
+              return (
+                <div
+                  key={step.title}
+                  className="relative rounded-[var(--radius-lg)] border border-line bg-surface p-6 text-center shadow-[var(--shadow-card)]"
+                >
+                  <span className="absolute right-4 top-4 font-heading text-3xl font-bold text-primary-light">
+                    {i + 1}
+                  </span>
+                  <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-primary-light text-primary">
+                    <Icon className="h-6 w-6" aria-hidden />
+                  </span>
+                  <h3 className="mt-4 font-heading text-lg font-semibold text-ink">{step.title}</h3>
+                  <p className="mt-1.5 text-sm text-ink-muted">{step.description}</p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      <section className="container-app py-16">
+        <div className="relative overflow-hidden rounded-[var(--radius-lg)] bg-gradient-to-r from-primary to-primary-hover px-6 py-12 text-center sm:px-12">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute -right-10 -top-10 h-48 w-48 rounded-full bg-white/10 blur-2xl"
+          />
+          <div
+            aria-hidden
+            className="pointer-events-none absolute -bottom-12 -left-8 h-48 w-48 rounded-full bg-white/10 blur-2xl"
+          />
+          <h2 className="relative font-heading text-2xl font-bold text-white sm:text-3xl">
+            Got something to sell?
+          </h2>
+          <p className="relative mx-auto mt-2 max-w-lg text-sm text-white/90">
+            Reach thousands of buyers across Pakistan. Posting your ad is quick, easy, and free.
+          </p>
+          <Link
+            href="/post"
+            className="relative mt-6 inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-semibold text-primary shadow-sm transition-transform hover:-translate-y-0.5"
+          >
+            <CirclePlus className="h-4.5 w-4.5" aria-hidden />
+            Post your ad free
+          </Link>
         </div>
       </section>
     </div>
