@@ -1,33 +1,22 @@
 import type { PartnerApplicationInput } from "@/lib/validations/partner";
 
-const PARTNER_TO = process.env.PARTNER_APPLICATIONS_TO ?? "sabih@promowebdesigns.com";
+const DEFAULT_TO = process.env.PARTNER_APPLICATIONS_TO ?? "sabih@promowebdesigns.com";
+
+interface OutgoingEmail {
+  to?: string;
+  replyTo?: string;
+  subject: string;
+  text: string;
+  /** Prefix used when logging (no provider configured). */
+  logPrefix: string;
+}
 
 /**
- * Sends a partner application to the Buysellox team.
- *
- * Email delivery is optional until a provider is configured. When
- * `RESEND_API_KEY` is set the application is sent via Resend; otherwise it is
- * logged server-side (loudly) so it is never silently lost, and the caller
- * still treats the submission as accepted.
- *
- * Returns `true` only when an email was actually delivered.
+ * Sends a transactional email via Resend when `RESEND_API_KEY` is configured.
+ * Until a provider is set up, the message is logged server-side (loudly) so
+ * nothing is silently lost. Returns `true` only when an email was delivered.
  */
-export async function sendPartnerApplicationEmail(
-  data: PartnerApplicationInput
-): Promise<boolean> {
-  const tierLabel = data.tier === "premium" ? "Our Premium Partner" : "Our Partner";
-  const subject = `New partner application — ${tierLabel} — ${data.name}`;
-  const text = [
-    `Tier requested: ${tierLabel}`,
-    `Name: ${data.name}`,
-    data.business ? `Business: ${data.business}` : null,
-    `Email: ${data.email}`,
-    `Phone: ${data.phone}`,
-    data.message ? `\nMessage:\n${data.message}` : null,
-  ]
-    .filter(Boolean)
-    .join("\n");
-
+async function sendEmail({ to, replyTo, subject, text, logPrefix }: OutgoingEmail): Promise<boolean> {
   const resendKey = process.env.RESEND_API_KEY;
   if (resendKey) {
     const from = process.env.PARTNER_APPLICATIONS_FROM ?? "Buysellox <onboarding@resend.dev>";
@@ -39,8 +28,8 @@ export async function sendPartnerApplicationEmail(
       },
       body: JSON.stringify({
         from,
-        to: [PARTNER_TO],
-        reply_to: data.email,
+        to: [to ?? DEFAULT_TO],
+        ...(replyTo ? { reply_to: replyTo } : {}),
         subject,
         text,
       }),
@@ -52,10 +41,43 @@ export async function sendPartnerApplicationEmail(
     return true;
   }
 
-  // No provider configured yet — log loudly so applications aren't lost.
   console.warn(
-    `[partner-application] Email delivery is not configured (set RESEND_API_KEY to enable). ` +
-      `Application received:\n${text}`
+    `${logPrefix} Email delivery is not configured (set RESEND_API_KEY to enable). Received:\n${text}`
   );
   return false;
+}
+
+/** Sends a "Become Our Partner" application to the Buysellox team. */
+export async function sendPartnerApplicationEmail(
+  data: PartnerApplicationInput
+): Promise<boolean> {
+  const tierLabel = data.tier === "premium" ? "Our Premium Partner" : "Our Partner";
+  const text = [
+    `Tier requested: ${tierLabel}`,
+    `Name: ${data.name}`,
+    data.business ? `Business: ${data.business}` : null,
+    `Email: ${data.email}`,
+    `Phone: ${data.phone}`,
+    data.message ? `\nMessage:\n${data.message}` : null,
+  ]
+    .filter(Boolean)
+    .join("\n");
+
+  return sendEmail({
+    replyTo: data.email,
+    subject: `New partner application — ${tierLabel} — ${data.name}`,
+    text,
+    logPrefix: "[partner-application]",
+  });
+}
+
+/** Notifies the team of a newsletter signup from the footer. */
+export async function sendNewsletterSignupEmail(email: string): Promise<boolean> {
+  return sendEmail({
+    to: process.env.NEWSLETTER_SIGNUPS_TO ?? DEFAULT_TO,
+    replyTo: email,
+    subject: `New newsletter signup — ${email}`,
+    text: `New newsletter subscriber: ${email}`,
+    logPrefix: "[newsletter-signup]",
+  });
 }
