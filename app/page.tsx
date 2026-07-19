@@ -18,6 +18,7 @@ import { expireStalePromotions } from "@/lib/promotions-server";
 import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/is-configured";
 import ListingGrid from "@/components/listings/ListingGrid";
+import ListingSlider from "@/components/listings/ListingSlider";
 import AdSlot from "@/components/ads/AdSlot";
 import { AD_SLOTS } from "@/lib/ads";
 import SearchBar from "@/components/layout/SearchBar";
@@ -143,7 +144,7 @@ export default async function Home() {
           </Link>
         </div>
         <div className="mt-5">
-          <ListingGrid
+          <ListingSlider
             listings={latest}
             emptyTitle="No listings yet"
             emptyDescription="Be the first to post an ad on Buysellox.com."
