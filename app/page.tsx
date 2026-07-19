@@ -121,7 +121,7 @@ export default async function Home() {
             <div className="flex items-center justify-between">
               <h2 className="font-heading text-2xl font-semibold text-ink">Featured listings</h2>
               <Link
-                href="/search"
+                href="/search?featured=1"
                 className="inline-flex items-center gap-1 rounded-full bg-primary-light px-3.5 py-1.5 text-sm font-medium text-primary transition-colors hover:bg-primary hover:text-white"
               >
                 View all
@@ -138,7 +138,7 @@ export default async function Home() {
       <section className="container-app py-12">
         <div className="flex items-center justify-between">
           <h2 className="font-heading text-2xl font-semibold text-ink">Latest listings</h2>
-          <Link href="/search" className="text-sm font-medium text-primary hover:text-primary-hover">
+          <Link href="/search?sort=newest" className="text-sm font-medium text-primary hover:text-primary-hover">
             View all
           </Link>
         </div>

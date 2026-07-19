@@ -12,6 +12,8 @@ export interface ListingFilters {
   minPrice?: number;
   maxPrice?: number;
   query?: string;
+  /** Limit to promoted "Featured"/"Top" listings (matches the homepage Featured section). */
+  featured?: boolean;
   sort?: SortOption;
   page?: number;
   pageSize?: number;
@@ -35,6 +37,7 @@ export async function getListings(supabase: SupabaseClient, filters: ListingFilt
   if (filters.minPrice !== undefined) query = query.gte("price", filters.minPrice);
   if (filters.maxPrice !== undefined) query = query.lte("price", filters.maxPrice);
   if (filters.query) query = query.ilike("title", `%${filters.query}%`);
+  if (filters.featured) query = query.in("badge", ["featured", "top"]);
 
   switch (filters.sort) {
     case "price_asc":

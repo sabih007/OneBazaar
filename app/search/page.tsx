@@ -13,46 +13,52 @@ export const metadata: Metadata = {
 };
 
 interface SearchPageProps {
-  searchParams: Promise<{ q?: string; sort?: string; page?: string }>;
+  searchParams: Promise<{ q?: string; sort?: string; page?: string; featured?: string }>;
 }
 
 export default async function SearchPage({ searchParams }: SearchPageProps) {
   const sp = await searchParams;
   const query = sp.q?.trim() ?? "";
+  const featuredOnly = sp.featured === "1";
 
   let listings: Awaited<ReturnType<typeof getListings>>["listings"] = [];
   let total = 0;
 
-  if (isSupabaseConfigured && query) {
+  if (isSupabaseConfigured) {
     const supabase = await createClient();
     expireStalePromotions(supabase);
     const result = await getListings(supabase, {
-      query,
-      sort: (sp.sort as SortOption) ?? "recommended",
+      query: query || undefined,
+      featured: featuredOnly || undefined,
+      sort: (sp.sort as SortOption) ?? (featuredOnly ? "recommended" : "newest"),
       page: sp.page ? Number(sp.page) : 1,
     });
     listings = result.listings;
     total = result.total;
   }
 
+  const heading = query
+    ? `Results for "${query}"`
+    : featuredOnly
+      ? "Featured listings"
+      : "Browse listings";
+
   return (
     <div className="container-app py-6">
-      <h1 className="font-heading text-2xl font-bold text-ink">
-        {query ? `Results for "${query}"` : "Search Buysellox.com"}
-      </h1>
+      <h1 className="font-heading text-2xl font-bold text-ink">{heading}</h1>
       <p className="mt-1 text-sm text-ink-muted">
-        {query
-          ? `${total} listing${total === 1 ? "" : "s"} found`
-          : "Use the search bar above to find listings across every category and city."}
+        {`${total} listing${total === 1 ? "" : "s"} found`}
       </p>
 
       <div className="mt-5">
         <AdSlot slot={AD_SLOTS.search} label="Search" className="mb-5" />
         <ListingGrid
           listings={listings}
-          emptyTitle={query ? "No matches" : "Start typing to search"}
+          emptyTitle={query ? "No matches" : featuredOnly ? "No featured listings yet" : "No listings yet"}
           emptyDescription={
-            query ? "Try different keywords or browse by category instead." : ""
+            query
+              ? "Try different keywords or browse by category instead."
+              : "Check back soon — new ads are posted every day."
           }
         />
       </div>
