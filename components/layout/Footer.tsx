@@ -31,9 +31,9 @@ export default function Footer() {
       </div>
 
       {/* Main columns */}
-      <div className="container-app grid grid-cols-2 gap-8 py-12 sm:grid-cols-3 lg:grid-cols-5">
+      <div className="container-app grid grid-cols-2 gap-8 py-12 sm:grid-cols-4">
         {/* Brand */}
-        <div className="col-span-2 sm:col-span-3 lg:col-span-2">
+        <div className="col-span-2 sm:col-span-2 lg:col-span-1">
           <Link href="/" aria-label="Buysellox.com — home" className="inline-flex">
             <Image
               src="/logo.jpg"
