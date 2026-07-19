@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
 import { Select } from "@/components/ui/Select";
 import { Button } from "@/components/ui/Button";
+import { amountInWords } from "@/lib/number-to-words";
 
 interface DetailsStepProps {
   category: Category;
@@ -26,9 +27,16 @@ export default function DetailsStep({
 }: DetailsStepProps) {
   const {
     register,
+    watch,
     formState: { errors },
     trigger,
   } = form;
+
+  const priceValue = watch("price");
+  const priceWords =
+    typeof priceValue === "number" && Number.isFinite(priceValue) && priceValue > 0
+      ? amountInWords(priceValue)
+      : "";
 
   async function handleNext() {
     const fields: (keyof ListingBaseInput)[] = [
@@ -76,6 +84,11 @@ export default function DetailsStep({
               inputMode="numeric"
               {...register("price", { valueAsNumber: true })}
             />
+            {priceWords && (
+              <p className="mt-1 text-xs text-ink-muted" aria-live="polite">
+                {priceWords} rupees
+              </p>
+            )}
             {errors.price && <p className="mt-1 text-xs text-danger">{errors.price.message}</p>}
           </div>
 

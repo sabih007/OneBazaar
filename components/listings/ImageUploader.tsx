@@ -88,15 +88,15 @@ export default function ImageUploader({ userId, images, onChange }: ImageUploade
               type="button"
               onClick={() => removeAt(i)}
               aria-label="Remove photo"
-              className="absolute right-1.5 top-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-ink/70 text-white opacity-0 transition-opacity group-hover:opacity-100"
+              className="absolute right-1.5 top-1.5 flex h-7 w-7 items-center justify-center rounded-full bg-ink/70 text-white transition-opacity hover:bg-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100"
             >
-              <X className="h-3.5 w-3.5" />
+              <X className="h-4 w-4" />
             </button>
             {i !== 0 && (
               <button
                 type="button"
                 onClick={() => makeCover(i)}
-                className="absolute inset-x-0 bottom-0 bg-ink/60 py-1 text-[10px] text-white opacity-0 transition-opacity group-hover:opacity-100"
+                className="absolute inset-x-0 bottom-0 bg-ink/60 py-1 text-[10px] text-white transition-opacity sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100"
               >
                 Make cover
               </button>

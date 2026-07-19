@@ -101,9 +101,14 @@ export default function ChatThread({
             }
           }}
           placeholder="Type a message…"
-          className="h-11 flex-1 rounded-md border border-line bg-surface px-3.5 text-sm text-ink focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
+          className="h-11 min-w-0 flex-1 rounded-md border border-line bg-surface px-3.5 text-sm text-ink focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
         />
-        <Button onClick={onSend} disabled={sending || !draft.trim()} aria-label="Send message">
+        <Button
+          onClick={onSend}
+          disabled={sending || !draft.trim()}
+          aria-label="Send message"
+          className="shrink-0"
+        >
           <Send className="h-4 w-4" />
         </Button>
       </div>
