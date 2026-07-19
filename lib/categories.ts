@@ -1,11 +1,16 @@
 export type AttributeField = {
   key: string;
   label: string;
-  type: "text" | "number" | "select" | "boolean";
+  type: "text" | "number" | "select" | "boolean" | "measure";
   options?: string[];
+  /** Selectable units for a `measure` field, e.g. Marla / Sq. Ft. The chosen unit is stored under `${key}_unit`. */
+  units?: string[];
   required?: boolean;
   unit?: string;
 };
+
+/** Common area/size units used across Pakistani property listings. */
+export const AREA_UNITS = ["Marla", "Kanal", "Sq. Ft", "Sq. Yd", "Sq. M", "Acre"];
 
 export type Subcategory = {
   name: string;
@@ -35,7 +40,7 @@ export const categories: Category[] = [
     attributes: [
       { key: "bedrooms", label: "Bedrooms", type: "number" },
       { key: "bathrooms", label: "Bathrooms", type: "number" },
-      { key: "area", label: "Area", type: "text", unit: "marla/sq.ft" },
+      { key: "area", label: "Area / Size", type: "measure", units: AREA_UNITS },
       { key: "furnished", label: "Furnished", type: "boolean" },
       { key: "floor", label: "Floor", type: "text" },
       {
@@ -64,7 +69,7 @@ export const categories: Category[] = [
     attributes: [
       { key: "bedrooms", label: "Bedrooms", type: "number" },
       { key: "bathrooms", label: "Bathrooms", type: "number" },
-      { key: "area", label: "Area", type: "text", unit: "marla/sq.ft" },
+      { key: "area", label: "Area / Size", type: "measure", units: AREA_UNITS },
       { key: "furnished", label: "Furnished", type: "boolean" },
       { key: "floor", label: "Floor", type: "text" },
     ],

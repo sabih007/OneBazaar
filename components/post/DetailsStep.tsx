@@ -158,6 +158,36 @@ export default function DetailsStep({
                     </div>
                   );
                 }
+                if (field.type === "measure") {
+                  const unitName = `attributes.${field.key}_unit` as const;
+                  return (
+                    <div key={field.key} className="col-span-2">
+                      <Label htmlFor={name}>{field.label}</Label>
+                      <div className="flex gap-2">
+                        <Input
+                          id={name}
+                          type="number"
+                          inputMode="numeric"
+                          placeholder="e.g. 5"
+                          className="flex-1"
+                          {...register(name)}
+                        />
+                        <Select
+                          aria-label={`${field.label} unit`}
+                          defaultValue={field.units?.[0]}
+                          className="w-28 shrink-0"
+                          {...register(unitName)}
+                        >
+                          {field.units?.map((u) => (
+                            <option key={u} value={u}>
+                              {u}
+                            </option>
+                          ))}
+                        </Select>
+                      </div>
+                    </div>
+                  );
+                }
                 return (
                   <div key={field.key}>
                     <Label htmlFor={name}>
