@@ -4,6 +4,7 @@ import { Afacad, Poppins } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import BetaPartnerPopup from "@/components/marketing/BetaPartnerPopup";
 import QueryProvider from "@/components/providers/QueryProvider";
 import { ADSENSE_CLIENT_ID } from "@/lib/ads";
 import { GA_MEASUREMENT_ID } from "@/lib/analytics";
@@ -106,6 +107,7 @@ export default function RootLayout({
           <Header />
           <main className="flex-1">{children}</main>
           <Footer />
+          <BetaPartnerPopup />
         </QueryProvider>
       </body>
     </html>
