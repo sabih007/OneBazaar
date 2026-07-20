@@ -37,7 +37,7 @@ export default function CategoryStep({
             className={cn(
               "rounded-md border p-4 text-left text-sm font-medium transition-colors duration-150",
               categorySlug === c.slug
-                ? "border-primary bg-primary-light text-primary"
+                ? "border-primary bg-primary-light text-primary-text"
                 : "border-line bg-surface text-ink hover:border-primary/50"
             )}
           >
@@ -58,7 +58,7 @@ export default function CategoryStep({
                 className={cn(
                   "rounded-full border px-3.5 py-1.5 text-xs font-medium transition-colors duration-150",
                   subcategorySlug === s.slug
-                    ? "border-primary bg-primary text-white"
+                    ? "border-primary bg-primary text-ink"
                     : "border-line bg-surface text-ink-muted hover:border-primary/50"
                 )}
               >
@@ -74,7 +74,7 @@ export default function CategoryStep({
           type="button"
           disabled={!categorySlug}
           onClick={onNext}
-          className="inline-flex h-11 items-center justify-center rounded-md bg-primary px-6 text-sm font-medium text-white transition-colors hover:bg-primary-hover disabled:opacity-50"
+          className="inline-flex h-11 items-center justify-center rounded-md bg-primary px-6 text-sm font-medium text-ink transition-colors hover:bg-primary-hover disabled:opacity-50"
         >
           Continue
         </button>

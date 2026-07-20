@@ -39,12 +39,12 @@ export default function PartnerPage() {
           className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-primary/20 blur-3xl"
         />
         <div className="container-app relative py-16 text-center sm:py-20">
-          <span className="inline-flex items-center gap-2 rounded-full bg-surface/80 px-4 py-1.5 text-xs font-medium text-primary shadow-[var(--shadow-card)] backdrop-blur">
+          <span className="inline-flex items-center gap-2 rounded-full bg-surface/80 px-4 py-1.5 text-xs font-medium text-primary-text shadow-[var(--shadow-card)] backdrop-blur">
             <Handshake className="h-4 w-4" aria-hidden />
             Partner programme
           </span>
           <h1 className="mt-5 font-heading text-4xl font-bold tracking-tight text-ink sm:text-5xl">
-            Partner with <span className="text-primary">Buysellox</span>
+            Partner with <span className="text-primary-text">Buysellox</span>
           </h1>
           <p className="mx-auto mt-4 max-w-xl text-sm text-ink-muted sm:text-base">
             Grow your business on Pakistan&apos;s marketplace. Become <strong>Our Partner</strong> or{" "}
@@ -54,7 +54,7 @@ export default function PartnerPage() {
           <div className="mt-8">
             <Link
               href="#apply"
-              className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-white shadow-[var(--shadow-card)] transition-transform hover:-translate-y-0.5"
+              className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-ink shadow-[var(--shadow-card)] transition-transform hover:-translate-y-0.5"
             >
               Apply now
             </Link>
@@ -72,7 +72,7 @@ export default function PartnerPage() {
                 key={item.title}
                 className="rounded-[var(--radius-lg)] border border-line bg-surface p-6 text-center shadow-[var(--shadow-card)]"
               >
-                <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary-light text-primary">
+                <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary-light text-primary-text">
                   <Icon className="h-5 w-5" aria-hidden />
                 </span>
                 <h3 className="mt-4 font-heading text-lg font-semibold text-ink">{item.title}</h3>
@@ -106,7 +106,7 @@ export default function PartnerPage() {
                 }
               >
                 {tier.highlight && (
-                  <span className="absolute -top-3 left-1/2 inline-flex -translate-x-1/2 items-center gap-1 rounded-full bg-primary px-3 py-1 text-xs font-semibold text-white">
+                  <span className="absolute -top-3 left-1/2 inline-flex -translate-x-1/2 items-center gap-1 rounded-full bg-primary px-3 py-1 text-xs font-semibold text-ink">
                     <Crown className="h-3.5 w-3.5" aria-hidden />
                     Most popular
                   </span>
@@ -116,7 +116,7 @@ export default function PartnerPage() {
                 <ul className="mt-5 space-y-2.5">
                   {tier.benefits.map((benefit) => (
                     <li key={benefit} className="flex items-start gap-2 text-sm text-ink">
-                      <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden />
+                      <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary-text" aria-hidden />
                       <span>{benefit}</span>
                     </li>
                   ))}
@@ -125,8 +125,8 @@ export default function PartnerPage() {
                   href="#apply"
                   className={
                     tier.highlight
-                      ? "mt-6 flex w-full items-center justify-center rounded-md bg-primary px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-primary-hover"
-                      : "mt-6 flex w-full items-center justify-center rounded-md border border-line px-4 py-2.5 text-sm font-semibold text-ink transition-colors hover:border-primary hover:text-primary"
+                      ? "mt-6 flex w-full items-center justify-center rounded-md bg-primary px-4 py-2.5 text-sm font-semibold text-ink transition-colors hover:bg-primary-hover"
+                      : "mt-6 flex w-full items-center justify-center rounded-md border border-line px-4 py-2.5 text-sm font-semibold text-ink transition-colors hover:border-primary hover:text-primary-text"
                   }
                 >
                   Apply for {tier.name}

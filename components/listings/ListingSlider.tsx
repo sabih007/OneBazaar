@@ -55,7 +55,7 @@ export default function ListingSlider({
     return (
       <div className="flex flex-col items-center justify-center rounded-[var(--radius-lg)] border border-dashed border-line bg-surface px-6 py-20 text-center">
         <span className="flex h-16 w-16 items-center justify-center rounded-full bg-primary-light">
-          <PackageSearch className="h-8 w-8 text-primary" aria-hidden />
+          <PackageSearch className="h-8 w-8 text-primary-text" aria-hidden />
         </span>
         <p className="mt-4 font-heading text-lg font-semibold text-ink">{emptyTitle}</p>
         <p className="mt-1 text-sm text-ink-muted">{emptyDescription}</p>
@@ -88,7 +88,7 @@ export default function ListingSlider({
         onClick={() => scrollByPage(-1)}
         disabled={!canPrev}
         aria-label="Previous listings"
-        className="absolute -left-3 top-[38%] hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-line bg-surface text-ink shadow-[var(--shadow-card)] transition-opacity hover:text-primary disabled:pointer-events-none disabled:opacity-0 sm:flex"
+        className="absolute -left-3 top-[38%] hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-line bg-surface text-ink shadow-[var(--shadow-card)] transition-opacity hover:text-primary-text disabled:pointer-events-none disabled:opacity-0 sm:flex"
       >
         <ChevronLeft className="h-5 w-5" aria-hidden />
       </button>
@@ -97,7 +97,7 @@ export default function ListingSlider({
         onClick={() => scrollByPage(1)}
         disabled={!canNext}
         aria-label="Next listings"
-        className="absolute -right-3 top-[38%] hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-line bg-surface text-ink shadow-[var(--shadow-card)] transition-opacity hover:text-primary disabled:pointer-events-none disabled:opacity-0 sm:flex"
+        className="absolute -right-3 top-[38%] hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-line bg-surface text-ink shadow-[var(--shadow-card)] transition-opacity hover:text-primary-text disabled:pointer-events-none disabled:opacity-0 sm:flex"
       >
         <ChevronRight className="h-5 w-5" aria-hidden />
       </button>

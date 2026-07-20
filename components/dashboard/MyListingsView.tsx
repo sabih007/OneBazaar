@@ -44,7 +44,7 @@ export default function MyListingsView({ listings: initialListings }: { listings
               className={cn(
                 "border-b-2 px-4 py-2.5 text-sm font-medium transition-colors",
                 tab === t.key
-                  ? "border-primary text-primary"
+                  ? "border-primary text-primary-text"
                   : "border-transparent text-ink-muted hover:text-ink"
               )}
             >

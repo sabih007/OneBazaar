@@ -83,7 +83,7 @@ export default function ProfileForm({ profile }: { profile: Profile }) {
         <button
           type="button"
           onClick={() => fileRef.current?.click()}
-          className="group relative flex h-20 w-20 items-center justify-center overflow-hidden rounded-full border border-line bg-primary-light text-2xl font-semibold text-primary"
+          className="group relative flex h-20 w-20 items-center justify-center overflow-hidden rounded-full border border-line bg-primary-light text-2xl font-semibold text-primary-text"
         >
           {avatarUrl ? (
             <Image src={avatarUrl} alt="Avatar" fill className="object-cover" />

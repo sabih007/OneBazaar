@@ -61,7 +61,7 @@ export default async function MyPromotionsPage() {
                     {promo.listing ? (
                       <Link
                         href={`/${promo.listing.category_slug}/${promo.listing.city_slug}/${promo.listing.slug}`}
-                        className="text-ink hover:text-primary"
+                        className="text-ink hover:text-primary-text"
                       >
                         {promo.listing.title}
                       </Link>

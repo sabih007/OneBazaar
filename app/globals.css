@@ -1,12 +1,17 @@
 @import "tailwindcss";
 
 :root {
-  --color-primary: #037971;
-  --color-primary-hover: #023436;
-  --color-primary-light: #dff3f1;
+  --color-primary: #00a6fb;
+  --color-primary-hover: #0582ca;
+  --color-primary-light: #e3f5ff;
+  /* #00a6fb only hits ~2.7:1 contrast on white/dark text — fails WCAG AA.
+     primary-text/-text-hover are darker steps of the same blue family, for
+     any place blue is used as a *text/icon* color rather than a fill. */
+  --color-primary-text: #006494;
+  --color-primary-text-hover: #003554;
   --color-background: #eef4f3;
   --color-surface: #fafcfc;
-  --color-ink: #1a1a1a;
+  --color-ink: #051923;
   --color-ink-muted: #6b7280;
   --color-line: #dfe8e7;
   --color-success: #16a34a;
@@ -19,6 +24,8 @@
   --color-primary: var(--color-primary);
   --color-primary-hover: var(--color-primary-hover);
   --color-primary-light: var(--color-primary-light);
+  --color-primary-text: var(--color-primary-text);
+  --color-primary-text-hover: var(--color-primary-text-hover);
   --color-background: var(--color-background);
   --color-surface: var(--color-surface);
   --color-ink: var(--color-ink);
@@ -92,7 +99,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .prose-legal a {
-  color: var(--color-primary);
+  color: var(--color-primary-text);
   text-decoration: underline;
 }
 

@@ -62,7 +62,7 @@ export default async function SellerProfilePage({ params }: SellerPageProps) {
   return (
     <div className="container-app py-6">
       <div className="flex items-center gap-4">
-        <span className="flex h-16 w-16 items-center justify-center rounded-full bg-primary-light text-2xl font-semibold text-primary">
+        <span className="flex h-16 w-16 items-center justify-center rounded-full bg-primary-light text-2xl font-semibold text-primary-text">
           {(seller.full_name || "S").charAt(0).toUpperCase()}
         </span>
         <div>

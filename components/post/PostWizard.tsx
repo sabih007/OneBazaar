@@ -93,9 +93,9 @@ export default function PostWizard({ userId }: { userId: string }) {
                 className={cn(
                   "flex h-8 w-8 items-center justify-center rounded-full text-xs font-semibold transition-colors",
                   i < step
-                    ? "bg-primary text-white"
+                    ? "bg-primary text-ink"
                     : i === step
-                      ? "bg-primary-light text-primary ring-2 ring-primary"
+                      ? "bg-primary-light text-primary-text ring-2 ring-primary"
                       : "bg-background text-ink-muted"
                 )}
               >

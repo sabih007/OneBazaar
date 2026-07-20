@@ -46,7 +46,7 @@ export default function Footer() {
           <p className="mt-3 max-w-xs text-sm text-ink-muted">
             Pakistan&apos;s marketplace to buy and sell anything, safely — across every major city.
           </p>
-          <span className="mt-4 inline-block rounded-full bg-primary/10 px-2.5 py-1 text-xs font-semibold uppercase tracking-wide text-primary">
+          <span className="mt-4 inline-block rounded-full bg-primary/10 px-2.5 py-1 text-xs font-semibold uppercase tracking-wide text-primary-text">
             Beta
           </span>
 
@@ -56,7 +56,7 @@ export default function Footer() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Follow Buysellox on Facebook"
-              className="flex h-9 w-9 items-center justify-center rounded-full border border-line text-ink-muted transition-colors hover:border-primary hover:text-primary"
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-line text-ink-muted transition-colors hover:border-primary hover:text-primary-text"
             >
               <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className="h-4 w-4">
                 <path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987H7.898v-2.89h2.54V9.797c0-2.507 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12Z" />
@@ -67,7 +67,7 @@ export default function Footer() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Follow Buysellox on Instagram"
-              className="flex h-9 w-9 items-center justify-center rounded-full border border-line text-ink-muted transition-colors hover:border-primary hover:text-primary"
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-line text-ink-muted transition-colors hover:border-primary hover:text-primary-text"
             >
               <svg
                 viewBox="0 0 24 24"
@@ -93,7 +93,7 @@ export default function Footer() {
           <ul className="space-y-2">
             {topCategories.map((c) => (
               <li key={c.slug}>
-                <Link href={`/${c.slug}/lahore`} className="text-sm text-ink-muted hover:text-primary">
+                <Link href={`/${c.slug}/lahore`} className="text-sm text-ink-muted hover:text-primary-text">
                   {c.name}
                 </Link>
               </li>
@@ -107,7 +107,7 @@ export default function Footer() {
           <ul className="space-y-2">
             {topCities.map((c) => (
               <li key={c.slug}>
-                <Link href={`/vehicles/${c.slug}`} className="text-sm text-ink-muted hover:text-primary">
+                <Link href={`/vehicles/${c.slug}`} className="text-sm text-ink-muted hover:text-primary-text">
                   {c.name}
                 </Link>
               </li>
@@ -120,17 +120,17 @@ export default function Footer() {
           <h3 className="mb-3 text-sm font-semibold text-ink">Company</h3>
           <ul className="space-y-2 text-sm text-ink-muted">
             <li>
-              <Link href="/post" className="hover:text-primary">
+              <Link href="/post" className="hover:text-primary-text">
                 Post an ad
               </Link>
             </li>
             <li>
-              <Link href="/search" className="hover:text-primary">
+              <Link href="/search" className="hover:text-primary-text">
                 Browse listings
               </Link>
             </li>
             <li>
-              <Link href="/partner" className="hover:text-primary">
+              <Link href="/partner" className="hover:text-primary-text">
                 Become our partner
               </Link>
             </li>
@@ -143,13 +143,13 @@ export default function Footer() {
         <div className="container-app flex flex-col items-center justify-between gap-3 py-5 text-xs text-ink-muted sm:flex-row">
           <p>© {year} Buysellox.com. All rights reserved.</p>
           <div className="flex items-center gap-5">
-            <Link href="/terms" className="hover:text-primary">
+            <Link href="/terms" className="hover:text-primary-text">
               Terms &amp; Conditions
             </Link>
-            <Link href="/privacy" className="hover:text-primary">
+            <Link href="/privacy" className="hover:text-primary-text">
               Privacy Policy
             </Link>
-            <Link href="/partner" className="hover:text-primary">
+            <Link href="/partner" className="hover:text-primary-text">
               Partner
             </Link>
           </div>

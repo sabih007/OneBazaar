@@ -119,11 +119,11 @@ export default function SignupForm() {
 
         <p className="text-center text-xs text-ink-muted">
           By signing up, you agree to our{" "}
-          <Link href="/terms" className="font-medium text-primary hover:text-primary-hover">
+          <Link href="/terms" className="font-medium text-primary-text hover:text-primary-text-hover">
             Terms &amp; Conditions
           </Link>{" "}
           and{" "}
-          <Link href="/privacy" className="font-medium text-primary hover:text-primary-hover">
+          <Link href="/privacy" className="font-medium text-primary-text hover:text-primary-text-hover">
             Privacy Policy
           </Link>
           .
@@ -132,7 +132,7 @@ export default function SignupForm() {
 
       <p className="mt-6 text-center text-sm text-ink-muted">
         Already have an account?{" "}
-        <Link href="/login" className="font-medium text-primary hover:text-primary-hover">
+        <Link href="/login" className="font-medium text-primary-text hover:text-primary-text-hover">
           Log in
         </Link>
       </p>

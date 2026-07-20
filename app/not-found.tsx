@@ -56,7 +56,7 @@ export default function NotFound() {
       <div className="container-app relative flex flex-col items-center py-16 text-center sm:py-24">
         {/* 404 — the circular-arrows logo mark stands in for the zero */}
         <div className="flex items-center justify-center gap-1 sm:gap-3">
-          <span className="font-heading text-[6.5rem] font-bold leading-none text-primary sm:text-[10rem]">
+          <span className="font-heading text-[6.5rem] font-bold leading-none text-primary-text sm:text-[10rem]">
             4
           </span>
           <Image
@@ -67,7 +67,7 @@ export default function NotFound() {
             priority
             className="h-24 w-24 animate-[spin_7s_linear_infinite] drop-shadow-sm sm:h-40 sm:w-40"
           />
-          <span className="font-heading text-[6.5rem] font-bold leading-none text-primary sm:text-[10rem]">
+          <span className="font-heading text-[6.5rem] font-bold leading-none text-primary-text sm:text-[10rem]">
             4
           </span>
         </div>
@@ -113,7 +113,7 @@ export default function NotFound() {
                   href={`/${c.slug}/lahore`}
                   className="group flex items-center gap-3 rounded-[var(--radius-lg)] border border-line bg-surface p-4 text-left shadow-[var(--shadow-card)] transition-all duration-300 hover:-translate-y-1 hover:border-primary/20 hover:shadow-[var(--shadow-card-hover)]"
                 >
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary-light text-primary transition-colors duration-300 group-hover:bg-primary group-hover:text-white">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary-light text-primary-text transition-colors duration-300 group-hover:bg-primary group-hover:text-ink">
                     <Icon className="h-5 w-5" />
                   </span>
                   <span className="text-sm font-medium text-ink">{c.name}</span>
@@ -135,7 +135,7 @@ export default function NotFound() {
               <Link
                 key={city.slug}
                 href={`/vehicles/${city.slug}`}
-                className="rounded-full border border-line bg-surface px-4 py-1.5 text-sm font-medium text-ink-muted transition-all hover:-translate-y-0.5 hover:border-primary hover:text-primary hover:shadow-[var(--shadow-card)]"
+                className="rounded-full border border-line bg-surface px-4 py-1.5 text-sm font-medium text-ink-muted transition-all hover:-translate-y-0.5 hover:border-primary hover:text-primary-text hover:shadow-[var(--shadow-card)]"
               >
                 {city.name}
               </Link>

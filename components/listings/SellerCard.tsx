@@ -19,7 +19,7 @@ export default function SellerCard({ seller, listingId, isOwner, isLoggedIn, use
   return (
     <div className="rounded-[var(--radius-lg)] border border-line bg-surface p-5 shadow-[var(--shadow-card)]">
       <Link href={`/seller/${seller.id}`} className="flex items-center gap-3">
-        <span className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary-hover text-base font-semibold text-white shadow-sm">
+        <span className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary-hover text-base font-semibold text-ink shadow-sm">
           {(seller.full_name || "S").charAt(0).toUpperCase()}
         </span>
         <div className="min-w-0">

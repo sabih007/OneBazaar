@@ -6,10 +6,10 @@ type Size = "sm" | "md" | "lg";
 
 const variantClasses: Record<Variant, string> = {
   primary:
-    "bg-primary text-white shadow-[var(--shadow-card)] hover:bg-primary-hover hover:-translate-y-0.5 hover:shadow-[var(--shadow-card-hover)] active:translate-y-0 active:shadow-[var(--shadow-card)]",
+    "bg-primary text-ink shadow-[var(--shadow-card)] hover:bg-primary-hover hover:-translate-y-0.5 hover:shadow-[var(--shadow-card-hover)] active:translate-y-0 active:shadow-[var(--shadow-card)]",
   secondary:
-    "bg-surface text-ink border border-line hover:border-primary/40 hover:bg-primary-light hover:text-primary hover:-translate-y-0.5 hover:shadow-[var(--shadow-card)] active:translate-y-0 active:shadow-none",
-  ghost: "bg-transparent text-ink hover:bg-primary-light hover:text-primary",
+    "bg-surface text-ink border border-line hover:border-primary/40 hover:bg-primary-light hover:text-primary-text hover:-translate-y-0.5 hover:shadow-[var(--shadow-card)] active:translate-y-0 active:shadow-none",
+  ghost: "bg-transparent text-ink hover:bg-primary-light hover:text-primary-text",
   danger:
     "bg-danger text-white shadow-[var(--shadow-card)] hover:bg-danger/90 hover:-translate-y-0.5 hover:shadow-[var(--shadow-card-hover)] active:translate-y-0 active:shadow-[var(--shadow-card)]",
 };

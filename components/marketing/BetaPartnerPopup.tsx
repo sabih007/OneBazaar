@@ -67,16 +67,16 @@ export default function BetaPartnerPopup() {
           type="button"
           aria-label="Close"
           onClick={() => setOpen(false)}
-          className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full text-ink-muted transition-colors hover:bg-primary-light hover:text-primary"
+          className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full text-ink-muted transition-colors hover:bg-primary-light hover:text-primary-text"
         >
           <X className="h-4 w-4" aria-hidden />
         </button>
 
         <div className="bg-gradient-to-br from-primary-light/80 to-surface px-6 pt-8 text-center">
-          <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-primary text-white shadow-[var(--shadow-card)]">
+          <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-primary text-ink shadow-[var(--shadow-card)]">
             <Rocket className="h-6 w-6" aria-hidden />
           </span>
-          <span className="mt-4 inline-block rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-primary">
+          <span className="mt-4 inline-block rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-primary-text">
             Beta
           </span>
           <h2
@@ -97,7 +97,7 @@ export default function BetaPartnerPopup() {
             <Link
               href="/partner"
               onClick={() => setOpen(false)}
-              className="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-primary-hover"
+              className="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-5 py-3 text-sm font-semibold text-ink transition-colors hover:bg-primary-hover"
             >
               <Handshake className="h-4 w-4" aria-hidden />
               Become a partner

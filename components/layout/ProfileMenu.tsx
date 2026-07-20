@@ -47,7 +47,7 @@ export default function ProfileMenu({ name }: { name: string | null }) {
         onClick={() => setOpen((v) => !v)}
         className="flex h-11 items-center gap-2 rounded-md border border-line bg-surface px-3 text-sm font-medium text-ink transition-colors hover:bg-background"
       >
-        <span className="flex h-7 w-7 items-center justify-center rounded-full bg-primary-light text-xs font-semibold text-primary">
+        <span className="flex h-7 w-7 items-center justify-center rounded-full bg-primary-light text-xs font-semibold text-primary-text">
           {(name || "U").charAt(0).toUpperCase()}
         </span>
         <span className="hidden max-w-[8rem] truncate sm:inline">{name || "Account"}</span>
@@ -134,7 +134,7 @@ function GuestMenu() {
           <Link
             href="/signup"
             onClick={() => setOpen(false)}
-            className="flex items-center gap-2.5 px-3.5 py-2.5 text-sm font-medium text-primary hover:bg-background"
+            className="flex items-center gap-2.5 px-3.5 py-2.5 text-sm font-medium text-primary-text hover:bg-background"
           >
             <UserPlus aria-hidden className="h-4 w-4" />
             Sign up

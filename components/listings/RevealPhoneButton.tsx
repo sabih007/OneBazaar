@@ -36,7 +36,7 @@ export default function RevealPhoneButton({
     return (
       <a
         href={`tel:${phone}`}
-        className="flex h-11 items-center justify-center gap-2 rounded-md border border-primary bg-primary-light px-4 text-sm font-semibold text-primary"
+        className="flex h-11 items-center justify-center gap-2 rounded-md border border-primary bg-primary-light px-4 text-sm font-semibold text-primary-text"
       >
         <Phone className="h-4 w-4" aria-hidden />
         {phone}

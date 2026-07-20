@@ -65,7 +65,7 @@ export default function VerifyForm() {
         <h1 className="font-heading text-2xl font-semibold text-ink">Verify your email</h1>
         <p className="mt-2 text-sm text-ink-muted">
           We couldn&apos;t find an email to verify.{" "}
-          <Link href="/signup" className="font-medium text-primary hover:text-primary-hover">
+          <Link href="/signup" className="font-medium text-primary-text hover:text-primary-text-hover">
             Sign up
           </Link>{" "}
           again to get a new code.
@@ -97,7 +97,7 @@ export default function VerifyForm() {
         </div>
 
         {formError && <p className="text-sm text-danger">{formError}</p>}
-        {resent && !formError && <p className="text-sm text-primary">A new code was sent.</p>}
+        {resent && !formError && <p className="text-sm text-primary-text">A new code was sent.</p>}
 
         <Button type="submit" className="w-full" disabled={isSubmitting}>
           {isSubmitting ? "Verifying…" : "Verify"}
@@ -110,7 +110,7 @@ export default function VerifyForm() {
           type="button"
           onClick={handleResend}
           disabled={resending}
-          className="font-medium text-primary hover:text-primary-hover disabled:opacity-50 disabled:pointer-events-none"
+          className="font-medium text-primary-text hover:text-primary-text-hover disabled:opacity-50 disabled:pointer-events-none"
         >
           {resending ? "Sending…" : "Resend code"}
         </button>

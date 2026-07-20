@@ -81,7 +81,7 @@ export default function MyListingRow({
             {statusLabel[listing.status] ?? listing.status}
           </span>
         </div>
-        <Link href={href} className="mt-1 block truncate font-medium text-ink hover:text-primary">
+        <Link href={href} className="mt-1 block truncate font-medium text-ink hover:text-primary-text">
           {listing.title}
         </Link>
         <p className="text-sm text-ink-muted">
