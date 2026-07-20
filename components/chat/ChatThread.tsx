@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Send } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
-import { getMessages, sendMessage, subscribeToMessages } from "@/lib/chat";
+import { markConversationRead, sendMessage, subscribeToMessages } from "@/lib/chat";
 import type { Message } from "@/types/database";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
@@ -26,9 +26,12 @@ export default function ChatThread({
     const supabase = createClient();
     const unsubscribe = subscribeToMessages(supabase, conversationId, (message) => {
       setMessages((prev) => (prev.some((m) => m.id === message.id) ? prev : [...prev, message]));
+      if (message.sender_id !== currentUserId) {
+        markConversationRead(supabase, conversationId).catch(() => {});
+      }
     });
     return unsubscribe;
-  }, [conversationId]);
+  }, [conversationId, currentUserId]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -79,7 +82,7 @@ export default function ChatThread({
               <div
                 className={cn(
                   "max-w-[75%] rounded-md px-3.5 py-2 text-sm",
-                  mine ? "bg-primary text-white" : "bg-background text-ink"
+                  mine ? "bg-primary text-ink" : "bg-background text-ink"
                 )}
               >
                 {m.body}

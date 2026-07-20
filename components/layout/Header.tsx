@@ -1,21 +1,31 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Plus } from "lucide-react";
-import { getUser } from "@/lib/supabase/server";
+import { MessageCircle, Plus } from "lucide-react";
+import { createClient, getUser } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/is-configured";
+import { getUnreadMessageCount } from "@/lib/chat";
 import SearchBar from "@/components/layout/SearchBar";
 import CitySelector from "@/components/layout/CitySelector";
 import ProfileMenu, { GuestActions } from "@/components/layout/ProfileMenu";
+import UnreadNavBadge from "@/components/chat/UnreadNavBadge";
 import { Button } from "@/components/ui/Button";
 
 export default async function Header() {
+  let userId: string | null = null;
   let fullName: string | null = null;
   let isLoggedIn = false;
+  let unreadCount = 0;
 
   if (isSupabaseConfigured) {
     const user = await getUser();
     isLoggedIn = Boolean(user);
+    userId = user?.id ?? null;
     fullName = (user?.user_metadata?.full_name as string | undefined) ?? null;
+
+    if (user) {
+      const supabase = await createClient();
+      unreadCount = await getUnreadMessageCount(supabase);
+    }
   }
 
   return (
@@ -47,6 +57,17 @@ export default async function Header() {
               <span>Post an ad</span>
             </Button>
           </Link>
+
+          {isLoggedIn && userId && (
+            <Link
+              href="/me/chats"
+              aria-label="Messages"
+              className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-md border border-line bg-surface text-ink transition-colors hover:bg-background"
+            >
+              <MessageCircle aria-hidden className="h-5 w-5" />
+              <UnreadNavBadge initialCount={unreadCount} userId={userId} />
+            </Link>
+          )}
 
           {isLoggedIn ? <ProfileMenu name={fullName} /> : <GuestActions />}
         </div>

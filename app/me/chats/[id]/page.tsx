@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { createClient, getUser } from "@/lib/supabase/server";
-import { getMessages } from "@/lib/chat";
+import { getMessages, markConversationRead } from "@/lib/chat";
 import ChatThread from "@/components/chat/ChatThread";
 
 export const metadata: Metadata = { title: "Chat" };
@@ -26,6 +26,7 @@ export default async function ChatThreadPage({
   if (!conversation) notFound();
   if (conversation.buyer_id !== user.id && conversation.seller_id !== user.id) notFound();
 
+  await markConversationRead(supabase, id);
   const messages = await getMessages(supabase, id);
 
   return (
