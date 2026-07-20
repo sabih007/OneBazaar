@@ -49,14 +49,21 @@ export async function generateMetadata({ params }: ListingPageProps): Promise<Me
   if (!listing) return {};
 
   const city = getCity(citySlug);
-  const title = `${listing.title} in ${city?.name ?? listing.city} — Rs. ${new Intl.NumberFormat("en-PK").format(listing.price)} | Buysellox.com`;
-  const description = listing.description.slice(0, 150);
+  const cityName = city?.name ?? listing.city;
+  const title = `${listing.title} in ${cityName} — Rs. ${new Intl.NumberFormat("en-PK").format(listing.price)} | Buysellox.com`;
+  const description = `${listing.description.slice(0, 100)} — free classified ad on Buysellox.com.`;
   const url = `/${listing.category_slug}/${listing.city_slug}/${listing.slug}`;
 
   return {
     title,
     description,
-    keywords: [listing.title, `${listing.title} ${city?.name ?? listing.city}`, listing.category],
+    keywords: [
+      listing.title,
+      `${listing.title} ${cityName}`,
+      `${listing.category} classified ads ${cityName}`,
+      listing.category,
+      "classified ads",
+    ],
     alternates: { canonical: url },
     openGraph: {
       title,

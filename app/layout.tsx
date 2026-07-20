@@ -26,17 +26,20 @@ const poppins = Poppins({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: `${SITE_NAME} — Buy & Sell Anything in Pakistan | OLX Alternative`,
+    default: `${SITE_NAME} — Free Classified Ads in Pakistan | Buy & Sell Anything`,
     template: `%s | ${SITE_NAME}`,
   },
   description: SITE_DESCRIPTION,
   keywords: [
+    "free classified ads Pakistan",
+    "online classified ads Pakistan",
+    "post classified ads online",
+    "classified ads website Pakistan",
     "buy and sell Pakistan",
     "online classifieds Pakistan",
     "OLX Pakistan alternative",
     "used cars for sale Pakistan",
     "houses for sale Pakistan",
-    "free classified ads Pakistan",
   ],
   applicationName: SITE_NAME,
   robots: {
@@ -48,14 +51,14 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     siteName: SITE_NAME,
-    title: `${SITE_NAME} — Buy & Sell Anything in Pakistan`,
+    title: `${SITE_NAME} — Free Classified Ads in Pakistan`,
     description: SITE_DESCRIPTION,
     url: SITE_URL,
     locale: "en_PK",
   },
   twitter: {
     card: "summary_large_image",
-    title: `${SITE_NAME} — Buy & Sell Anything in Pakistan`,
+    title: `${SITE_NAME} — Free Classified Ads in Pakistan`,
     description: SITE_DESCRIPTION,
   },
   ...(process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION && {

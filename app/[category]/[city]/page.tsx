@@ -28,18 +28,21 @@ export async function generateMetadata({ params }: BrowsePageProps): Promise<Met
   if (!category || !city) return {};
 
   const categoryLower = category.name.toLowerCase();
-  const title = `${category.name} in ${city.name} — Buy & Sell ${category.name} | Buysellox.com`;
-  const description = `Buy and sell ${categoryLower} in ${city.name}, Pakistan. Browse ${category.subcategories.length ? `${category.subcategories.map((s) => s.name.toLowerCase()).slice(0, 3).join(", ")} and more — ` : ""}thousands of verified listings with prices in Rs. on Buysellox.com. Post your ad free, no commission.`;
+  const cityLower = city.name.toLowerCase();
+  const title = `${category.name} Classified Ads in ${city.name} | Buysellox.com`;
+  const description = `Free classified ads for ${categoryLower} in ${city.name}, Pakistan. Browse ${category.subcategories.length ? `${category.subcategories.map((s) => s.name.toLowerCase()).slice(0, 3).join(", ")} and more — ` : ""}thousands of verified listings with prices in Rs. on Buysellox.com. Post your classified ad free, no commission.`;
   const canonical = `/${category.slug}/${city.slug}`;
 
   return {
     title,
     description,
     keywords: [
-      `${categoryLower} in ${city.name.toLowerCase()}`,
-      `${categoryLower} for sale ${city.name.toLowerCase()}`,
-      `buy ${categoryLower} ${city.name.toLowerCase()}`,
-      `sell ${categoryLower} ${city.name.toLowerCase()}`,
+      `${categoryLower} classified ads ${cityLower}`,
+      `${categoryLower} in ${cityLower}`,
+      `${categoryLower} for sale ${cityLower}`,
+      `buy ${categoryLower} ${cityLower}`,
+      `sell ${categoryLower} ${cityLower}`,
+      `free classified ads ${cityLower}`,
     ],
     alternates: { canonical },
     openGraph: { title, description, url: canonical, type: "website", locale: "en_PK" },
