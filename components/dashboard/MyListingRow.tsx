@@ -3,10 +3,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { CheckCircle2, ImageOff, Pencil, RotateCcw, Sparkles, Trash2 } from "lucide-react";
+import { CheckCircle2, ImageOff, Pencil, RefreshCw, RotateCcw, Sparkles, Trash2 } from "lucide-react";
 import type { Listing } from "@/types/database";
 import { createClient } from "@/lib/supabase/client";
-import { deleteListing, markListingSold, repostListing } from "@/lib/listings";
+import { deleteListing, markListingSold } from "@/lib/listings";
 import { formatPKR } from "@/lib/utils";
 import PromoBadge from "@/components/listings/PromoBadge";
 import { Button } from "@/components/ui/Button";
@@ -17,6 +17,13 @@ const statusLabel: Record<string, string> = {
   pending: "Pending",
   expired: "Expired",
 };
+
+/** Posts to a listing action route (repost/refresh); throws with the server's error message on failure. */
+async function postListingAction(listingId: string, action: "repost" | "refresh") {
+  const res = await fetch(`/api/listings/${listingId}/${action}`, { method: "POST" });
+  const json = await res.json().catch(() => null);
+  if (!res.ok) throw new Error(json?.error ?? "Something went wrong");
+}
 
 export default function MyListingRow({
   listing,
@@ -108,13 +115,30 @@ export default function MyListingRow({
             disabled={pending === "repost"}
             onClick={() =>
               run("repost", { status: "active", bumped_at: new Date().toISOString() }, () =>
-                repostListing(createClient(), listing.id)
+                postListingAction(listing.id, "repost")
               )
             }
           >
             <RotateCcw className="h-3.5 w-3.5" /> Repost
           </Button>
-        ) : listing.status !== "sold" ? (
+        ) : listing.status === "active" && !listing.free_refresh_used_at ? (
+          <Button
+            size="sm"
+            variant="secondary"
+            className="gap-1.5"
+            disabled={pending === "refresh"}
+            onClick={() =>
+              run(
+                "refresh",
+                { bumped_at: new Date().toISOString(), free_refresh_used_at: new Date().toISOString() },
+                () => postListingAction(listing.id, "refresh")
+              )
+            }
+          >
+            <RefreshCw className="h-3.5 w-3.5" /> Free refresh
+          </Button>
+        ) : null}
+        {listing.status !== "sold" && listing.status !== "expired" ? (
           <Button
             size="sm"
             variant="secondary"

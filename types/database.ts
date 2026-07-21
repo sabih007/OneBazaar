@@ -51,6 +51,7 @@ export interface Listing {
   views_count: number;
   created_at: string;
   expires_at: string;
+  free_refresh_used_at: string | null;
 }
 
 export interface Package {

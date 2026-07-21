@@ -21,6 +21,7 @@ import { categories } from "@/lib/categories";
 import { cities } from "@/lib/cities";
 import { getCategoryCounts, getFavoritedListingIds, getListings } from "@/lib/listings";
 import { expireStalePromotions } from "@/lib/promotions-server";
+import { expireStaleListings } from "@/lib/listings-server";
 import { createClient, getUser } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/is-configured";
 import ListingCard from "@/components/listings/ListingCard";
@@ -71,6 +72,7 @@ export default async function Home() {
   if (isSupabaseConfigured) {
     const supabase = await createClient();
     expireStalePromotions(supabase);
+    expireStaleListings(supabase);
     const user = await getUser();
     userId = user?.id ?? null;
 

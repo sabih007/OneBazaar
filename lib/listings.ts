@@ -4,6 +4,9 @@ import { slugifyTitle } from "@/lib/seo/slugify";
 
 export type SortOption = "recommended" | "newest" | "price_asc" | "price_desc";
 
+/** Free-tier cap on active listings (marketplace-packages-pakistan.md §1). */
+export const FREE_TIER_ACTIVE_LIMIT = 5;
+
 export interface ListingFilters {
   categorySlug?: string;
   citySlug?: string;
