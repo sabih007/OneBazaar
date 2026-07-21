@@ -3,9 +3,9 @@ import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 /**
  * Service-role client — bypasses RLS entirely. Never import this from a
  * client component or anywhere reachable by the browser bundle; it's for
- * server-verified writes only (e.g. confirming a Safepay payment succeeded)
- * where the caller must be trusted regardless of which user's session is
- * making the request. See supabase/migrations/0008_lock_down_promotions.sql —
+ * server-verified writes only (e.g. confirming a Lemon Squeezy payment
+ * succeeded) where the caller must be trusted regardless of which user's
+ * session is making the request. See supabase/migrations/0008_lock_down_promotions.sql —
  * `ad_promotions.payment_status` and the promotion columns on `listings` can
  * only be written by this client now.
  */

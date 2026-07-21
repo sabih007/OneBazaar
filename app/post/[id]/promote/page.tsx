@@ -11,11 +11,11 @@ export const metadata: Metadata = {
   title: "Promote your ad",
 };
 
-const SAFEPAY_STATUS_BANNER: Record<string, { tone: "success" | "danger"; text: string }> = {
-  success: { tone: "success", text: "Payment confirmed — your promotion is now active." },
-  failed: { tone: "danger", text: "The payment didn't go through. You haven't been charged — try again." },
-  cancelled: { tone: "danger", text: "Checkout was cancelled." },
-  error: { tone: "danger", text: "We couldn't confirm the payment. Check My promotions, or try again." },
+const CHECKOUT_STATUS_BANNER: Record<string, { tone: "success" | "danger"; text: string }> = {
+  success: {
+    tone: "success",
+    text: "Payment received — we're confirming it now, this usually takes a few seconds. Check My promotions for the latest status.",
+  },
 };
 
 export default async function PromoteListingPage({
@@ -23,11 +23,11 @@ export default async function PromoteListingPage({
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ safepay?: string }>;
+  searchParams: Promise<{ checkout?: string }>;
 }) {
   const { id } = await params;
-  const { safepay } = await searchParams;
-  const banner = safepay ? SAFEPAY_STATUS_BANNER[safepay] : undefined;
+  const { checkout } = await searchParams;
+  const banner = checkout ? CHECKOUT_STATUS_BANNER[checkout] : undefined;
 
   if (!isSupabaseConfigured) {
     return (

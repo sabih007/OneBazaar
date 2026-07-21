@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient, getUser } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { createPendingPromotion, markPromotionFailed } from "@/lib/promotions";
-import { createSafepayTracker, buildSafepayCheckoutUrl } from "@/lib/safepay";
+import { createLemonSqueezyCheckout } from "@/lib/lemonsqueezy";
 
-/** Starts a Safepay checkout for a promotion package (§6) and returns the redirect URL. */
+/** Starts a Lemon Squeezy checkout for a promotion package and returns the redirect URL. */
 export async function POST(request: NextRequest) {
   let promotionId: string | undefined;
-  let supabase: Awaited<ReturnType<typeof createClient>> | undefined;
 
   try {
     const user = await getUser();
@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "listingId and packageId are required" }, { status: 400 });
     }
 
-    supabase = await createClient();
+    const supabase = await createClient();
 
     const { data: listing, error: listingError } = await supabase
       .from("listings")
@@ -37,34 +37,30 @@ export async function POST(request: NextRequest) {
       listingId,
       userId: user.id,
       packageId,
-      paymentMethod: "card",
+      paymentMethod: "lemonsqueezy",
     });
     promotionId = promotion.id;
 
     const { origin } = request.nextUrl;
-    const cancelUrl = `${origin}/post/${listingId}/promote?safepay=cancelled`;
 
-    const token = await createSafepayTracker({
-      amount: packageRow.price,
-      currency: "PKR",
-      orderId: promotion.id,
-    });
-
-    const checkoutUrl = buildSafepayCheckoutUrl({
-      token,
-      orderId: promotion.id,
-      redirectUrl: `${origin}/api/safepay/callback?promotionId=${promotion.id}&listingId=${listingId}&token=${token}`,
-      cancelUrl,
+    const checkoutUrl = await createLemonSqueezyCheckout({
+      promotionId: promotion.id,
+      price: packageRow.price,
+      redirectUrl: `${origin}/post/${listingId}/promote?checkout=success`,
     });
 
     return NextResponse.json({ checkoutUrl });
   } catch (err) {
-    console.error("[safepay/checkout]", err);
-    if (promotionId && supabase) {
-      await markPromotionFailed(supabase, { promotionId }).catch(() => {});
+    console.error("[lemonsqueezy/checkout]", err);
+    if (promotionId) {
+      // Uses the admin client, not the user session — migration 0008 removed
+      // the user-facing UPDATE policy on ad_promotions entirely, so a
+      // user-session client here would silently fail RLS and leave the row
+      // stuck as `pending`.
+      await markPromotionFailed(createAdminClient(), { promotionId }).catch(() => {});
     }
     return NextResponse.json(
-      { error: err instanceof Error ? err.message : "Safepay session creation failed" },
+      { error: err instanceof Error ? err.message : "Lemon Squeezy checkout creation failed" },
       { status: 502 }
     );
   }

@@ -60,7 +60,7 @@ export default function PrivacyPage() {
         </li>
         <li>
           <strong>Service providers:</strong> we use Supabase for account authentication, database,
-          and file storage, and a payment gateway (Safepay) to process promotion payments.
+          and file storage, and a payment gateway (Lemon Squeezy) to process promotion payments.
         </li>
         <li>
           <strong>Advertising partners:</strong> Buysellox.com may show ads through Google AdSense.

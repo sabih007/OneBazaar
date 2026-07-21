@@ -103,7 +103,13 @@ export async function createPendingPromotion(
   return { promotion: promotion as AdPromotion, packageRow };
 }
 
-/** Confirms a real-gateway payment succeeded and applies it — called from the callback route only. */
+/**
+ * Confirms a real-gateway payment succeeded and applies it — called from the
+ * Lemon Squeezy webhook only (lib/supabase/admin.ts client). Idempotent: the
+ * `payment_status = 'pending'` filter means a duplicate webhook delivery (LS
+ * retries at-least-once) is a no-op rather than re-applying the package or
+ * throwing on a zero-row update.
+ */
 export async function markPromotionPaid(
   supabase: SupabaseClient,
   { promotionId, paymentRef }: { promotionId: string; paymentRef: string }
@@ -112,9 +118,11 @@ export async function markPromotionPaid(
     .from("ad_promotions")
     .update({ payment_status: "paid", payment_ref: paymentRef })
     .eq("id", promotionId)
+    .eq("payment_status", "pending")
     .select("listing_id, package_id")
-    .single();
+    .maybeSingle();
   if (error) throw error;
+  if (!promotion) return; // already paid (duplicate webhook) or unknown id
 
   const { data: pkg, error: pkgError } = await supabase
     .from("packages")
