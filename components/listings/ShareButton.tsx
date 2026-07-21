@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { Check, Link2, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { cn } from "@/lib/utils";
 import { useClickOutside } from "@/lib/hooks/useClickOutside";
 
 const WhatsAppIcon = () => (
@@ -17,18 +18,42 @@ const FacebookIcon = () => (
   </svg>
 );
 
-export default function ShareButton({ title }: { title: string }) {
+export default function ShareButton({
+  title,
+  url,
+  variant = "button",
+  iconSize = "sm",
+  className,
+}: {
+  title: string;
+  /** Absolute or relative URL to share — defaults to the current page. Pass this explicitly on listing cards, where the current page (e.g. the homepage) isn't the listing's own URL. */
+  url?: string;
+  /** "button" for the full labeled button (listing detail page); "icon" for a compact circular button (cards). */
+  variant?: "button" | "icon";
+  /** Only applies to variant="icon" — matches the adjacent favorite-heart button's size. */
+  iconSize?: "sm" | "md";
+  className?: string;
+}) {
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   useClickOutside(ref, () => setOpen(false));
 
-  async function share() {
-    const url = window.location.href;
+  function resolvedUrl() {
+    if (typeof window === "undefined") return url ?? "";
+    return url ? new URL(url, window.location.origin).href : window.location.href;
+  }
+
+  async function share(e: React.MouseEvent) {
+    // Cards render this inside a full-card <Link> — never let the click bubble into it.
+    e.preventDefault();
+    e.stopPropagation();
+
+    const shareUrl = resolvedUrl();
 
     if (typeof navigator !== "undefined" && navigator.share) {
       try {
-        await navigator.share({ title, url });
+        await navigator.share({ title, url: shareUrl });
       } catch {
         // user cancelled — not an error
       }
@@ -38,9 +63,11 @@ export default function ShareButton({ title }: { title: string }) {
     setOpen((v) => !v);
   }
 
-  async function copyLink() {
+  async function copyLink(e: React.MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
     try {
-      await navigator.clipboard.writeText(window.location.href);
+      await navigator.clipboard.writeText(resolvedUrl());
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
@@ -48,31 +75,46 @@ export default function ShareButton({ title }: { title: string }) {
     }
   }
 
-  const shareText = encodeURIComponent(`${title} — ${typeof window !== "undefined" ? window.location.href : ""}`);
-  const shareUrl = typeof window !== "undefined" ? encodeURIComponent(window.location.href) : "";
+  const shareText = encodeURIComponent(`${title} — ${resolvedUrl()}`);
+  const shareUrlParam = encodeURIComponent(resolvedUrl());
 
   return (
-    <div className="relative" ref={ref}>
-      <Button variant="secondary" onClick={share} className="gap-2">
-        <Share2 className="h-4 w-4" aria-hidden />
-        Share
-      </Button>
+    <div className={cn("relative", className)} ref={ref} onClick={(e) => e.stopPropagation()}>
+      {variant === "icon" ? (
+        <button
+          onClick={share}
+          aria-label="Share this listing"
+          className={cn(
+            "flex items-center justify-center rounded-full bg-surface/90 text-ink-muted shadow-sm backdrop-blur transition-transform duration-150 hover:scale-105",
+            iconSize === "md" ? "h-10 w-10" : "h-9 w-9"
+          )}
+        >
+          <Share2 className={iconSize === "md" ? "h-5 w-5" : "h-4.5 w-4.5"} aria-hidden />
+        </button>
+      ) : (
+        <Button variant="secondary" onClick={share} className="gap-2">
+          <Share2 className="h-4 w-4" aria-hidden />
+          Share
+        </Button>
+      )}
 
       {open && (
-        <div className="absolute left-0 z-20 mt-2 w-52 rounded-md border border-line bg-surface py-1 shadow-[var(--shadow-card-hover)]">
+        <div className="absolute right-0 z-20 mt-2 w-52 rounded-md border border-line bg-surface py-1 shadow-[var(--shadow-card-hover)]">
           <a
             href={`https://wa.me/?text=${shareText}`}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
             className="flex items-center gap-2.5 px-3.5 py-2.5 text-sm text-ink hover:bg-background"
           >
             <WhatsAppIcon />
             WhatsApp
           </a>
           <a
-            href={`https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`}
+            href={`https://www.facebook.com/sharer/sharer.php?u=${shareUrlParam}`}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
             className="flex items-center gap-2.5 px-3.5 py-2.5 text-sm text-ink hover:bg-background"
           >
             <FacebookIcon />

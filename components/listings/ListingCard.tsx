@@ -10,6 +10,7 @@ import { formatPKR, cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
 import { toggleFavorite } from "@/lib/listings";
 import PromoBadge from "@/components/listings/PromoBadge";
+import ShareButton from "@/components/listings/ShareButton";
 
 interface ListingCardProps {
   listing: Listing;
@@ -98,22 +99,25 @@ export default function ListingCard({
           />
         )}
 
-        <button
-          onClick={onToggleFavorite}
-          aria-label={favorited ? "Remove from favorites" : "Save to favorites"}
-          aria-pressed={favorited}
-          className={cn(
-            "absolute right-2.5 top-2.5 flex items-center justify-center rounded-full bg-surface/90 shadow-sm backdrop-blur transition-transform duration-150 hover:scale-105",
-            isFeatured ? "h-10 w-10" : "h-9 w-9"
-          )}
-        >
-          <Heart
+        <div className="absolute right-2.5 top-2.5 flex items-center gap-1.5">
+          <ShareButton title={listing.title} url={href} variant="icon" iconSize={isFeatured ? "md" : "sm"} />
+          <button
+            onClick={onToggleFavorite}
+            aria-label={favorited ? "Remove from favorites" : "Save to favorites"}
+            aria-pressed={favorited}
             className={cn(
-              isFeatured ? "h-5 w-5" : "h-4.5 w-4.5",
-              favorited ? "fill-danger text-danger" : "text-ink-muted"
+              "flex items-center justify-center rounded-full bg-surface/90 shadow-sm backdrop-blur transition-transform duration-150 hover:scale-105",
+              isFeatured ? "h-10 w-10" : "h-9 w-9"
             )}
-          />
-        </button>
+          >
+            <Heart
+              className={cn(
+                isFeatured ? "h-5 w-5" : "h-4.5 w-4.5",
+                favorited ? "fill-danger text-danger" : "text-ink-muted"
+              )}
+            />
+          </button>
+        </div>
 
         {isFeatured && (
           <p className="absolute inset-x-3 bottom-2.5 flex items-center gap-1 truncate text-xs font-medium text-white">
