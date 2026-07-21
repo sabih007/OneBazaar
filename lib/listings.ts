@@ -68,6 +68,18 @@ export async function getListings(supabase: SupabaseClient, filters: ListingFilt
   return { listings: (data ?? []) as Listing[], total: count ?? 0, page, pageSize };
 }
 
+/** Active listing count per category, for the homepage category cards. */
+export async function getCategoryCounts(supabase: SupabaseClient): Promise<Record<string, number>> {
+  const { data, error } = await supabase.from("listings").select("category_slug").eq("status", "active");
+  if (error) throw error;
+
+  const counts: Record<string, number> = {};
+  for (const row of data ?? []) {
+    counts[row.category_slug] = (counts[row.category_slug] ?? 0) + 1;
+  }
+  return counts;
+}
+
 export async function getListingBySlug(
   supabase: SupabaseClient,
   citySlug: string,

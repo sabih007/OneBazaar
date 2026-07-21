@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { ArrowUpRight, Heart, ImageOff, MapPin } from "lucide-react";
+import { ArrowUpRight, Eye, Heart, ImageOff, MapPin } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import type { Listing } from "@/types/database";
 import { formatPKR, cn } from "@/lib/utils";
@@ -55,7 +55,7 @@ export default function ListingCard({
       className={cn(
         "group relative block overflow-hidden rounded-[var(--radius-lg)] bg-surface transition-all duration-300 ease-out",
         isFeatured
-          ? "border-2 border-gold/25 shadow-[var(--shadow-elevated)] hover:-translate-y-2 hover:scale-[1.01] hover:border-gold/70 hover:shadow-[0_28px_54px_-18px_rgba(245,158,11,0.35)]"
+          ? "border-2 border-gold/25 shadow-[0_16px_40px_-16px_rgba(245,158,11,0.28),var(--shadow-elevated)] hover:-translate-y-2 hover:scale-[1.01] hover:border-gold/70 hover:shadow-[0_32px_64px_-16px_rgba(245,158,11,0.48),var(--shadow-elevated)]"
           : "border border-line shadow-[var(--shadow-card)] hover:-translate-y-1.5 hover:border-primary/30 hover:shadow-[var(--shadow-card-hover)]"
       )}
     >
@@ -72,7 +72,7 @@ export default function ListingCard({
             fill
             sizes={
               isFeatured
-                ? "(max-width: 640px) 90vw, (max-width: 1024px) 45vw, 30vw"
+                ? "(max-width: 640px) 90vw, (max-width: 1024px) 45vw, 24vw"
                 : "(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
             }
             className="object-cover transition-transform duration-500 ease-out group-hover:scale-110"
@@ -124,7 +124,15 @@ export default function ListingCard({
         )}
       </div>
 
-      <div className={isFeatured ? "p-4 sm:p-5" : "p-3.5"}>
+      {isFeatured && (
+        <div aria-hidden className="h-[3px] w-full bg-gradient-to-r from-gold via-gold/40 to-transparent" />
+      )}
+
+      <div
+        className={cn(
+          isFeatured ? "bg-gradient-to-b from-surface to-gold/[0.04] p-4 sm:p-5" : "p-3.5"
+        )}
+      >
         <div className="flex items-start justify-between gap-2">
           <p
             className={cn(
@@ -159,15 +167,21 @@ export default function ListingCard({
         <h3
           className={cn(
             "text-ink",
-            isFeatured ? "mt-1.5 line-clamp-2 text-base font-medium" : "mt-1 truncate text-sm"
+            isFeatured ? "mt-1.5 line-clamp-2 text-base font-semibold" : "mt-1 truncate text-sm"
           )}
           title={listing.title}
         >
           {listing.title}
         </h3>
         {isFeatured ? (
-          <p className="mt-2.5 text-xs text-ink-muted">
-            {formatDistanceToNow(new Date(listing.created_at), { addSuffix: true })}
+          <p className="mt-2.5 flex items-center gap-2 text-xs text-ink-muted">
+            <span>{formatDistanceToNow(new Date(listing.created_at), { addSuffix: true })}</span>
+            {listing.views_count > 0 && (
+              <span className="flex items-center gap-1 border-l border-line pl-2">
+                <Eye className="h-3 w-3" aria-hidden />
+                {listing.views_count.toLocaleString()}
+              </span>
+            )}
           </p>
         ) : (
           <p className="mt-1.5 truncate text-xs text-ink-muted">

@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 import { categories } from "@/lib/categories";
 import { cities } from "@/lib/cities";
-import { getListings } from "@/lib/listings";
+import { getCategoryCounts, getListings } from "@/lib/listings";
 import { expireStalePromotions } from "@/lib/promotions-server";
 import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/is-configured";
@@ -64,16 +64,19 @@ const howItWorks = [
 export default async function Home() {
   let featured: Awaited<ReturnType<typeof getListings>>["listings"] = [];
   let latest: Awaited<ReturnType<typeof getListings>>["listings"] = [];
+  let categoryCounts: Record<string, number> = {};
 
   if (isSupabaseConfigured) {
     const supabase = await createClient();
     expireStalePromotions(supabase);
-    const [featuredResult, latestResult] = await Promise.all([
+    const [featuredResult, latestResult, counts] = await Promise.all([
       getListings(supabase, { sort: "recommended", pageSize: 10 }),
       getListings(supabase, { sort: "newest", pageSize: 10 }),
+      getCategoryCounts(supabase),
     ]);
     featured = featuredResult.listings.filter((l) => l.badge === "featured" || l.badge === "top");
     latest = latestResult.listings;
+    categoryCounts = counts;
   }
 
   return (
@@ -135,16 +138,28 @@ export default async function Home() {
         <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 md:grid-cols-5">
           {categories.map((c) => {
             const Icon = categoryIcons[c.slug] ?? Building2;
+            const count = categoryCounts[c.slug] ?? 0;
             return (
               <Link
                 key={c.slug}
                 href={`/${c.slug}/lahore`}
-                className="group flex flex-col items-center gap-3 rounded-[var(--radius-lg)] border border-line bg-surface p-5 text-center shadow-[var(--shadow-card)] transition-all duration-300 hover:-translate-y-1 hover:border-primary/20 hover:shadow-[var(--shadow-card-hover)]"
+                className="group relative flex flex-col items-center gap-3 overflow-hidden rounded-[var(--radius-lg)] border border-line bg-gradient-to-b from-surface to-primary-light/25 p-5 text-center shadow-[var(--shadow-card)] transition-all duration-300 ease-out hover:-translate-y-1.5 hover:border-primary/30 hover:shadow-[var(--shadow-card-hover)]"
               >
-                <span className="flex h-12 w-12 items-center justify-center rounded-full bg-primary-light text-primary-text transition-colors duration-300 group-hover:bg-primary group-hover:text-ink">
-                  <Icon className="h-5 w-5" />
+                <span
+                  aria-hidden
+                  className="pointer-events-none absolute -right-6 -top-6 h-20 w-20 rounded-full bg-primary/10 blur-2xl transition-transform duration-500 ease-out group-hover:scale-125"
+                />
+                <span className="relative flex h-14 w-14 items-center justify-center rounded-full bg-primary-light text-primary-text shadow-sm transition-all duration-300 ease-out group-hover:scale-110 group-hover:bg-primary group-hover:text-ink">
+                  <Icon className="h-6 w-6" />
                 </span>
-                <span className="text-sm font-medium text-ink">{c.name}</span>
+                <span className="relative flex flex-col items-center gap-0.5">
+                  <span className="text-sm font-semibold text-ink">{c.name}</span>
+                  {count > 0 && (
+                    <span className="text-xs text-ink-muted">
+                      {count.toLocaleString()} {count === 1 ? "ad" : "ads"}
+                    </span>
+                  )}
+                </span>
               </Link>
             );
           })}
@@ -168,8 +183,8 @@ export default async function Home() {
                 <ArrowRight className="h-3.5 w-3.5" aria-hidden />
               </Link>
             </div>
-            <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {featured.slice(0, 6).map((listing) => (
+            <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              {featured.slice(0, 8).map((listing) => (
                 <ListingCard key={listing.id} listing={listing} variant="featured" />
               ))}
             </div>
