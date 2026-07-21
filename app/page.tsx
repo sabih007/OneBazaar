@@ -29,6 +29,7 @@ import ListingSlider from "@/components/listings/ListingSlider";
 import AdSlot from "@/components/ads/AdSlot";
 import { AD_SLOTS } from "@/lib/ads";
 import SearchBar from "@/components/layout/SearchBar";
+import ComparisonSection from "@/components/marketing/ComparisonSection";
 
 export const revalidate = 60;
 
@@ -259,6 +260,8 @@ export default async function Home() {
           </div>
         </div>
       </section>
+
+      <ComparisonSection />
 
       <section className="container-app py-16">
         <div className="relative overflow-hidden rounded-[var(--radius-lg)] bg-gradient-to-r from-primary to-primary-hover px-6 py-12 text-center sm:px-12">
