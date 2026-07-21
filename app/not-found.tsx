@@ -54,7 +54,7 @@ export default function NotFound() {
       />
 
       <div className="container-app relative flex flex-col items-center py-16 text-center sm:py-24">
-        {/* 404 — the circular-arrows logo mark stands in for the zero */}
+        {/* 404 — the app icon mark stands in for the zero */}
         <div className="flex items-center justify-center gap-1 sm:gap-3">
           <span className="font-heading text-[6.5rem] font-bold leading-none text-primary-text sm:text-[10rem]">
             4

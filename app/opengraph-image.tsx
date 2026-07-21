@@ -16,7 +16,7 @@ export default function Image() {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          background: "linear-gradient(135deg, #1B4EF5 0%, #1642D6 100%)",
+          background: "linear-gradient(135deg, #2490eb 0%, #022c49 100%)",
           fontFamily: "sans-serif",
         }}
       >
@@ -52,7 +52,7 @@ export default function Image() {
               key={city}
               style={{
                 fontSize: 24,
-                color: "#1B4EF5",
+                color: "#165992",
                 background: "#FFFFFF",
                 padding: "8px 22px",
                 borderRadius: 999,
