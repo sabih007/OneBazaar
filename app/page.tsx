@@ -19,9 +19,9 @@ import {
 } from "lucide-react";
 import { categories } from "@/lib/categories";
 import { cities } from "@/lib/cities";
-import { getCategoryCounts, getListings } from "@/lib/listings";
+import { getCategoryCounts, getFavoritedListingIds, getListings } from "@/lib/listings";
 import { expireStalePromotions } from "@/lib/promotions-server";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getUser } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/is-configured";
 import ListingCard from "@/components/listings/ListingCard";
 import ListingSlider from "@/components/listings/ListingSlider";
@@ -65,18 +65,25 @@ export default async function Home() {
   let featured: Awaited<ReturnType<typeof getListings>>["listings"] = [];
   let latest: Awaited<ReturnType<typeof getListings>>["listings"] = [];
   let categoryCounts: Record<string, number> = {};
+  let userId: string | null = null;
+  let favoritedIds = new Set<string>();
 
   if (isSupabaseConfigured) {
     const supabase = await createClient();
     expireStalePromotions(supabase);
-    const [featuredResult, latestResult, counts] = await Promise.all([
+    const user = await getUser();
+    userId = user?.id ?? null;
+
+    const [featuredResult, latestResult, counts, favorited] = await Promise.all([
       getListings(supabase, { sort: "recommended", pageSize: 10 }),
       getListings(supabase, { sort: "newest", pageSize: 10 }),
       getCategoryCounts(supabase),
+      userId ? getFavoritedListingIds(supabase, userId) : Promise.resolve(new Set<string>()),
     ]);
     featured = featuredResult.listings.filter((l) => l.badge === "featured" || l.badge === "top");
     latest = latestResult.listings;
     categoryCounts = counts;
+    favoritedIds = favorited;
   }
 
   return (
@@ -185,7 +192,13 @@ export default async function Home() {
             </div>
             <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
               {featured.slice(0, 8).map((listing) => (
-                <ListingCard key={listing.id} listing={listing} variant="featured" />
+                <ListingCard
+                  key={listing.id}
+                  listing={listing}
+                  variant="featured"
+                  userId={userId}
+                  isFavorited={favoritedIds.has(listing.id)}
+                />
               ))}
             </div>
           </div>
@@ -202,6 +215,8 @@ export default async function Home() {
         <div className="mt-5">
           <ListingSlider
             listings={latest}
+            userId={userId}
+            favoritedIds={favoritedIds}
             emptyTitle="No listings yet"
             emptyDescription="Be the first to post an ad on Buysellox.com."
           />

@@ -139,6 +139,16 @@ export async function getFavoriteListings(supabase: SupabaseClient, userId: stri
     .filter((listing): listing is Listing => listing !== null);
 }
 
+/** IDs of listings the user has favorited, for marking hearts filled in a listing grid/slider. */
+export async function getFavoritedListingIds(
+  supabase: SupabaseClient,
+  userId: string
+): Promise<Set<string>> {
+  const { data, error } = await supabase.from("favorites").select("listing_id").eq("user_id", userId);
+  if (error) throw error;
+  return new Set((data ?? []).map((row) => row.listing_id));
+}
+
 export async function incrementListingViews(supabase: SupabaseClient, listingId: string) {
   await supabase.rpc("increment_listing_views", { p_listing_id: listingId });
 }

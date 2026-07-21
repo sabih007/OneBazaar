@@ -2,9 +2,10 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { BadgeCheck } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getUser } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/is-configured";
 import { getPublicProfile } from "@/lib/profiles";
+import { getFavoritedListingIds } from "@/lib/listings";
 import ListingGrid from "@/components/listings/ListingGrid";
 
 interface SellerPageProps {
@@ -51,13 +52,17 @@ export default async function SellerProfilePage({ params }: SellerPageProps) {
   const seller = await getPublicProfile(supabase, id);
   if (!seller) notFound();
 
-  const { data: listings } = await supabase
-    .from("listings")
-    .select("*")
-    .eq("user_id", id)
-    .eq("status", "active")
-    .order("promotion_rank", { ascending: false })
-    .order("created_at", { ascending: false });
+  const [{ data: listings }, user] = await Promise.all([
+    supabase
+      .from("listings")
+      .select("*")
+      .eq("user_id", id)
+      .eq("status", "active")
+      .order("promotion_rank", { ascending: false })
+      .order("created_at", { ascending: false }),
+    getUser(),
+  ]);
+  const favoritedIds = user ? await getFavoritedListingIds(supabase, user.id) : new Set<string>();
 
   return (
     <div className="container-app py-6">
@@ -82,7 +87,12 @@ export default async function SellerProfilePage({ params }: SellerPageProps) {
       <h2 className="mb-4 mt-8 font-heading text-lg font-semibold text-ink">
         Listings from {seller.full_name || "this seller"}
       </h2>
-      <ListingGrid listings={listings ?? []} emptyTitle="No active listings" />
+      <ListingGrid
+        listings={listings ?? []}
+        userId={user?.id ?? null}
+        favoritedIds={favoritedIds}
+        emptyTitle="No active listings"
+      />
     </div>
   );
 }

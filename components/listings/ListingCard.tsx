@@ -53,15 +53,15 @@ export default function ListingCard({
     <Link
       href={href}
       className={cn(
-        "group relative block overflow-hidden rounded-[var(--radius-lg)] bg-surface transition-all duration-300 ease-out",
+        "group relative flex h-full flex-col overflow-hidden rounded-[var(--radius-lg)] bg-surface transition-all duration-300 ease-out",
         isFeatured
-          ? "border-2 border-gold/25 shadow-[0_16px_40px_-16px_rgba(245,158,11,0.28),var(--shadow-elevated)] hover:-translate-y-2 hover:scale-[1.01] hover:border-gold/70 hover:shadow-[0_32px_64px_-16px_rgba(245,158,11,0.48),var(--shadow-elevated)]"
+          ? "border-2 border-gold/25 shadow-[0_10px_24px_-14px_rgba(245,158,11,0.22),var(--shadow-card)] hover:-translate-y-1.5 hover:border-gold/70 hover:shadow-[0_18px_36px_-16px_rgba(245,158,11,0.32),var(--shadow-card-hover)]"
           : "border border-line shadow-[var(--shadow-card)] hover:-translate-y-1.5 hover:border-primary/30 hover:shadow-[var(--shadow-card-hover)]"
       )}
     >
       <div
         className={cn(
-          "relative w-full overflow-hidden bg-gradient-to-br from-background to-line/40",
+          "relative w-full shrink-0 overflow-hidden bg-gradient-to-br from-background to-line/40",
           isFeatured ? "aspect-[16/11]" : "aspect-[4/3]"
         )}
       >
@@ -130,6 +130,7 @@ export default function ListingCard({
 
       <div
         className={cn(
+          "flex flex-1 flex-col",
           isFeatured ? "bg-gradient-to-b from-surface to-gold/[0.04] p-4 sm:p-5" : "p-3.5"
         )}
       >
@@ -174,7 +175,7 @@ export default function ListingCard({
           {listing.title}
         </h3>
         {isFeatured ? (
-          <p className="mt-2.5 flex items-center gap-2 text-xs text-ink-muted">
+          <p className="mt-auto flex items-center gap-2 pt-2.5 text-xs text-ink-muted">
             <span>{formatDistanceToNow(new Date(listing.created_at), { addSuffix: true })}</span>
             {listing.views_count > 0 && (
               <span className="flex items-center gap-1 border-l border-line pl-2">
@@ -184,7 +185,7 @@ export default function ListingCard({
             )}
           </p>
         ) : (
-          <p className="mt-1.5 truncate text-xs text-ink-muted">
+          <p className="mt-auto truncate pt-1.5 text-xs text-ink-muted">
             {listing.city}
             {listing.area ? `, ${listing.area}` : ""} ·{" "}
             {formatDistanceToNow(new Date(listing.created_at), { addSuffix: true })}

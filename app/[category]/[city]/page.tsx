@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getCategory } from "@/lib/categories";
 import { getCity } from "@/lib/cities";
-import { getListings, type SortOption } from "@/lib/listings";
+import { getFavoritedListingIds, getListings, type SortOption } from "@/lib/listings";
 import { expireStalePromotions } from "@/lib/promotions-server";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getUser } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/is-configured";
 import { breadcrumbListJsonLd, itemListJsonLd, toJsonLdScript } from "@/lib/seo/jsonld";
 import Breadcrumbs from "@/components/layout/Breadcrumbs";
@@ -59,22 +59,31 @@ export default async function BrowsePage({ params, searchParams }: BrowsePagePro
 
   let listings: Awaited<ReturnType<typeof getListings>>["listings"] = [];
   let total = 0;
+  let userId: string | null = null;
+  let favoritedIds = new Set<string>();
 
   if (isSupabaseConfigured) {
     const supabase = await createClient();
     expireStalePromotions(supabase);
-    const result = await getListings(supabase, {
-      categorySlug: category.slug,
-      citySlug: city.slug,
-      subcategorySlug: sp.sub,
-      condition: sp.condition as "new" | "used" | undefined,
-      minPrice: sp.min ? Number(sp.min) : undefined,
-      maxPrice: sp.max ? Number(sp.max) : undefined,
-      sort: (sp.sort as SortOption) ?? "recommended",
-      page: sp.page ? Number(sp.page) : 1,
-    });
+    const user = await getUser();
+    userId = user?.id ?? null;
+
+    const [result, favorited] = await Promise.all([
+      getListings(supabase, {
+        categorySlug: category.slug,
+        citySlug: city.slug,
+        subcategorySlug: sp.sub,
+        condition: sp.condition as "new" | "used" | undefined,
+        minPrice: sp.min ? Number(sp.min) : undefined,
+        maxPrice: sp.max ? Number(sp.max) : undefined,
+        sort: (sp.sort as SortOption) ?? "recommended",
+        page: sp.page ? Number(sp.page) : 1,
+      }),
+      userId ? getFavoritedListingIds(supabase, userId) : Promise.resolve(new Set<string>()),
+    ]);
     listings = result.listings;
     total = result.total;
+    favoritedIds = favorited;
   }
 
   const breadcrumbs = [
@@ -127,6 +136,8 @@ export default async function BrowsePage({ params, searchParams }: BrowsePagePro
       <div className="mt-5">
         <ListingGrid
           listings={listings}
+          userId={userId}
+          favoritedIds={favoritedIds}
           emptyTitle={`No ${category.name.toLowerCase()} in ${city.name} yet`}
           emptyDescription="Be the first to post one, or try a different city or filter."
         />

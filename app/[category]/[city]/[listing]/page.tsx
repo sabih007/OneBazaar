@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { getCategory } from "@/lib/categories";
 import { getCity } from "@/lib/cities";
 import {
+  getFavoritedListingIds,
   getListingBySlug,
   getSimilarListings,
   incrementListingViews,
@@ -112,7 +113,7 @@ export default async function ListingDetailPage({ params }: ListingPageProps) {
   const isOwner = user?.id === listing.user_id;
   const isLoggedIn = Boolean(user);
 
-  const [seller, similar, favorite] = await Promise.all([
+  const [seller, similar, favorite, similarFavoritedIds] = await Promise.all([
     getPublicProfile(supabase, listing.user_id),
     getSimilarListings(supabase, listing),
     user
@@ -123,6 +124,7 @@ export default async function ListingDetailPage({ params }: ListingPageProps) {
           .eq("listing_id", listing.id)
           .maybeSingle()
       : Promise.resolve({ data: null }),
+    user ? getFavoritedListingIds(supabase, user.id) : Promise.resolve(new Set<string>()),
   ]);
 
   if (!isOwner) {
@@ -238,7 +240,7 @@ export default async function ListingDetailPage({ params }: ListingPageProps) {
           <h2 className="mb-4 font-heading text-xl font-semibold text-ink">
             Similar in {city.name}
           </h2>
-          <ListingGrid listings={similar} userId={user?.id ?? null} />
+          <ListingGrid listings={similar} userId={user?.id ?? null} favoritedIds={similarFavoritedIds} />
         </div>
       )}
     </div>

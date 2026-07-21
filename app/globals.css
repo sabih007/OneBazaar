@@ -1,17 +1,17 @@
 @import "tailwindcss";
 
 :root {
-  --color-primary: #00a6fb;
-  --color-primary-hover: #0582ca;
-  --color-primary-light: #e3f5ff;
-  /* #00a6fb only hits ~2.7:1 contrast on white/dark text — fails WCAG AA.
+  --color-primary: #2490eb;
+  --color-primary-hover: #1d73bc;
+  --color-primary-light: #e5f2fd;
+  /* #2490eb only hits ~3.35:1 contrast on white — fails WCAG AA for text.
      primary-text/-text-hover are darker steps of the same blue family, for
      any place blue is used as a *text/icon* color rather than a fill. */
-  --color-primary-text: #006494;
-  --color-primary-text-hover: #003554;
+  --color-primary-text: #165992;
+  --color-primary-text-hover: #0e375a;
   --color-background: #eef4f3;
   --color-surface: #fafcfc;
-  --color-ink: #051923;
+  --color-ink: #022c49;
   --color-ink-muted: #6b7280;
   --color-line: #dfe8e7;
   --color-success: #16a34a;
