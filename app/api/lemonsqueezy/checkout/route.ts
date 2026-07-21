@@ -3,6 +3,7 @@ import { createClient, getUser } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createPendingPromotion, markPromotionFailed } from "@/lib/promotions";
 import { createLemonSqueezyCheckout } from "@/lib/lemonsqueezy";
+import { getPublicOrigin } from "@/lib/request-origin";
 
 /** Starts a Lemon Squeezy checkout for a promotion package and returns the redirect URL. */
 export async function POST(request: NextRequest) {
@@ -41,12 +42,10 @@ export async function POST(request: NextRequest) {
     });
     promotionId = promotion.id;
 
-    const { origin } = request.nextUrl;
-
     const checkoutUrl = await createLemonSqueezyCheckout({
       promotionId: promotion.id,
       price: packageRow.price,
-      redirectUrl: `${origin}/post/${listingId}/promote?checkout=success`,
+      redirectUrl: `${getPublicOrigin(request)}/post/${listingId}/promote?checkout=success`,
     });
 
     return NextResponse.json({ checkoutUrl });
