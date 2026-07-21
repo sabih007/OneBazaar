@@ -66,7 +66,14 @@ export async function createLemonSqueezyCheckout({
   });
 
   if (!res.ok) {
-    throw new Error(`Lemon Squeezy checkout creation failed: ${res.status} ${await res.text()}`);
+    const bodyText = await res.text();
+    // Lemon Squeezy enforces a minimum checkout amount (~PKR 139, drifts
+    // with FX since it's pegged to a USD floor) — surface that plainly
+    // instead of a raw 422, since it's a real (if rare) admin-price case.
+    if (res.status === 422 && /custom price/i.test(bodyText)) {
+      throw new Error("This package's price is below Lemon Squeezy's minimum checkout amount — raise its price and try again.");
+    }
+    throw new Error(`Lemon Squeezy checkout creation failed: ${res.status} ${bodyText}`);
   }
 
   const json = await res.json();

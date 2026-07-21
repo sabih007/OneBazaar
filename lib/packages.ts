@@ -91,6 +91,8 @@ export const defaultPackages = [
     badge: null,
     promotion_rank: 0,
     duration_days: 0,
-    price: 100,
+    // Lemon Squeezy enforces a minimum checkout amount (~PKR 139, drifts with
+    // FX since it's pegged to a USD floor) — keep real headroom above it.
+    price: 200,
   },
 ];

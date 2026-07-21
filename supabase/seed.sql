@@ -8,4 +8,6 @@ insert into public.packages (key, name, badge, promotion_rank, duration_days, pr
   ('urgent', 'Urgent (7 days)', 'urgent', 5, 7, 250, true),
   ('top', 'Top Ad / Spotlight (3 days)', 'top', 30, 3, 1200, true),
   ('top', 'Top Ad / Spotlight (7 days)', 'top', 30, 7, 2200, true),
-  ('bump', 'Bump Up', null, 0, 0, 100, true);
+  -- 200, not 100: Lemon Squeezy enforces a minimum checkout amount (~PKR 139,
+  -- drifts with FX) — keep real headroom above it.
+  ('bump', 'Bump Up', null, 0, 0, 200, true);
