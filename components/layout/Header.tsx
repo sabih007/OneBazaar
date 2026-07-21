@@ -33,10 +33,10 @@ export default async function Header() {
       <div className="container-app flex h-16 items-center gap-2 sm:gap-4">
         <Link href="/" aria-label="Buysellox.com — home" className="flex shrink-0 items-center">
           <Image
-            src="/logo.jpg"
+            src="/logo-primary.png"
             alt="Buysellox.com"
-            width={1355}
-            height={364}
+            width={880}
+            height={228}
             priority
             className="h-8 w-auto sm:h-10"
           />

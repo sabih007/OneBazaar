@@ -36,10 +36,10 @@ export default function Footer() {
         <div className="col-span-2 sm:col-span-2 lg:col-span-1">
           <Link href="/" aria-label="Buysellox.com — home" className="inline-flex">
             <Image
-              src="/logo.jpg"
+              src="/logo-primary.png"
               alt="Buysellox.com"
-              width={1355}
-              height={364}
+              width={880}
+              height={228}
               className="h-9 w-auto"
             />
           </Link>
