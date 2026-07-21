@@ -13,8 +13,13 @@ export async function getActivePackages(supabase: SupabaseClient) {
   return (data ?? []) as Package[];
 }
 
-/** Applies a package's badge/rank (or bump) to its listing. Shared by every payment path. */
-async function applyPackageToListing(
+/**
+ * Applies a package's badge/rank (or bump) to its listing. Shared by every
+ * payment path — also called directly by app/api/listings/[id]/apply-credit
+ * after spending a Featured/Hot subscription credit, so the "don't
+ * downgrade, take the later expiry" logic only lives in one place.
+ */
+export async function applyPackageToListing(
   supabase: SupabaseClient,
   { listingId, packageRow }: { listingId: string; packageRow: Package }
 ) {

@@ -24,6 +24,8 @@ export interface Profile {
   role: Role;
   created_at: string;
   refresh_credits: number;
+  featured_credits: number;
+  hot_credits: number;
 }
 
 export interface Listing {
@@ -78,6 +80,17 @@ export interface AdPromotion {
   payment_method: PaymentMethod;
   payment_status: PaymentStatus;
   payment_ref: string | null;
+  created_at: string;
+}
+
+export interface Subscription {
+  id: string;
+  user_id: string;
+  tier: "shop" | "dealer" | "business_pro";
+  status: "active" | "cancelled" | "expired" | "past_due";
+  ls_subscription_id: string | null;
+  active_slot_limit: number;
+  current_period_end: string | null;
   created_at: string;
 }
 

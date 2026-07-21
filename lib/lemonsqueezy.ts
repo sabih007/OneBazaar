@@ -85,6 +85,82 @@ export async function createLemonSqueezyCheckout({
 }
 
 /**
+ * Starts a subscription checkout against one of the three fixed dealer-tier
+ * variants (LEMONSQUEEZY_SHOP/DEALER/BUSINESS_PRO_VARIANT_ID) — unlike the
+ * one-time boost checkout, no custom_price override: each tier has its own
+ * real LS variant with a fixed recurring price set in the dashboard.
+ */
+export async function createLemonSqueezySubscriptionCheckout({
+  userId,
+  tier,
+  variantId: subscriptionVariantId,
+  redirectUrl,
+}: {
+  userId: string;
+  tier: string;
+  variantId: string;
+  redirectUrl: string;
+}) {
+  const res = await fetch(`${API_BASE_URL}/checkouts`, {
+    method: "POST",
+    headers: {
+      Accept: "application/vnd.api+json",
+      "Content-Type": "application/vnd.api+json",
+      Authorization: `Bearer ${apiKey()}`,
+    },
+    body: JSON.stringify({
+      data: {
+        type: "checkouts",
+        attributes: {
+          checkout_data: { custom: { user_id: userId, tier } },
+          product_options: { redirect_url: redirectUrl },
+        },
+        relationships: {
+          store: { data: { type: "stores", id: storeId() } },
+          variant: { data: { type: "variants", id: subscriptionVariantId } },
+        },
+      },
+    }),
+  });
+
+  if (!res.ok) {
+    throw new Error(`Lemon Squeezy subscription checkout creation failed: ${res.status} ${await res.text()}`);
+  }
+
+  const json = await res.json();
+  const url = json?.data?.attributes?.url;
+  if (!url) {
+    throw new Error(`Lemon Squeezy checkout response missing url: ${JSON.stringify(json)}`);
+  }
+  return url as string;
+}
+
+/**
+ * Fetches a fresh Customer Portal link for a subscription — Lemon Squeezy's
+ * signed portal/payment-method URLs expire 24h after being issued, so this
+ * must be called live per "Manage subscription" click, never cached.
+ */
+export async function getSubscriptionPortalUrl(lsSubscriptionId: string) {
+  const res = await fetch(`${API_BASE_URL}/subscriptions/${lsSubscriptionId}`, {
+    headers: {
+      Accept: "application/vnd.api+json",
+      Authorization: `Bearer ${apiKey()}`,
+    },
+  });
+
+  if (!res.ok) {
+    throw new Error(`Lemon Squeezy subscription lookup failed: ${res.status} ${await res.text()}`);
+  }
+
+  const json = await res.json();
+  const url = json?.data?.attributes?.urls?.customer_portal;
+  if (!url) {
+    throw new Error(`Lemon Squeezy subscription response missing customer_portal url: ${JSON.stringify(json)}`);
+  }
+  return url as string;
+}
+
+/**
  * Verifies the `X-Signature` header on an incoming Lemon Squeezy webhook.
  * `rawBody` must be the exact, unparsed request body — the HMAC is computed
  * over raw bytes, so parsing JSON first (which can reorder/reformat) breaks

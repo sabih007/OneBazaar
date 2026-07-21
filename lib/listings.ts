@@ -7,6 +7,25 @@ export type SortOption = "recommended" | "newest" | "price_asc" | "price_desc";
 /** Free-tier cap on active listings (marketplace-packages-pakistan.md §1). */
 export const FREE_TIER_ACTIVE_LIMIT = 5;
 
+/**
+ * Resolves how many active listings a user may have — their subscription
+ * tier's `active_slot_limit` (§3) if they have one, else the free-tier
+ * default. Mirrors the same lookup `enforce_active_listing_limit`
+ * (supabase/migrations/0015) does at the DB level — that trigger is the
+ * real guarantee, this is just so app-layer pre-checks show the right
+ * number before hitting it.
+ */
+export async function getActiveSlotLimit(supabase: SupabaseClient, userId: string) {
+  const { data, error } = await supabase
+    .from("subscriptions")
+    .select("active_slot_limit")
+    .eq("user_id", userId)
+    .eq("status", "active")
+    .maybeSingle();
+  if (error) throw error;
+  return (data as { active_slot_limit: number } | null)?.active_slot_limit ?? FREE_TIER_ACTIVE_LIMIT;
+}
+
 export interface ListingFilters {
   categorySlug?: string;
   citySlug?: string;

@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { PackageSearch } from "lucide-react";
 import type { Listing } from "@/types/database";
+import type { CreditBalances } from "@/lib/profiles";
 import { cn } from "@/lib/utils";
 import MyListingRow from "@/components/dashboard/MyListingRow";
 import { Button } from "@/components/ui/Button";
@@ -20,7 +21,7 @@ export default function MyListingsView({
   initialCredits,
 }: {
   listings: Listing[];
-  initialCredits: number;
+  initialCredits: CreditBalances;
 }) {
   const [tab, setTab] = useState<(typeof tabs)[number]["key"]>("active");
   const [listings, setListings] = useState(initialListings);
@@ -37,6 +38,10 @@ export default function MyListingsView({
 
   function restoreListing(listing: Listing) {
     setListings((prev) => (prev.some((l) => l.id === listing.id) ? prev : [...prev, listing]));
+  }
+
+  function spend(type: keyof CreditBalances) {
+    setCredits((c) => ({ ...c, [type]: Math.max(0, c[type] - 1) }));
   }
 
   return (
@@ -80,8 +85,12 @@ export default function MyListingsView({
               onUpdate={updateListing}
               onRemove={removeListing}
               onRestore={restoreListing}
-              creditsAvailable={credits}
-              onCreditSpent={() => setCredits((c) => Math.max(0, c - 1))}
+              refreshCreditsAvailable={credits.refresh_credits}
+              featuredCreditsAvailable={credits.featured_credits}
+              hotCreditsAvailable={credits.hot_credits}
+              onRefreshCreditSpent={() => spend("refresh_credits")}
+              onFeaturedCreditSpent={() => spend("featured_credits")}
+              onHotCreditSpent={() => spend("hot_credits")}
             />
           ))
         )}

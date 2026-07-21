@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Heart, MessageCircle, Settings, Sparkles, User, Zap } from "lucide-react";
+import { Crown, Heart, MessageCircle, Settings, Sparkles, User, Zap } from "lucide-react";
 import { getUser } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/is-configured";
 
@@ -10,6 +10,7 @@ const navItems = [
   { href: "/me/chats", label: "Inbox", icon: MessageCircle },
   { href: "/me/promotions", label: "My promotions", icon: Sparkles },
   { href: "/me/credits", label: "Refresh credits", icon: Zap },
+  { href: "/me/subscription", label: "Subscription", icon: Crown },
   { href: "/me/profile", label: "Edit profile", icon: Settings },
 ];
 

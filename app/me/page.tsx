@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { createClient, getUser } from "@/lib/supabase/server";
 import { getMyListings } from "@/lib/listings";
-import { getRefreshCredits } from "@/lib/profiles";
+import { getCreditBalances } from "@/lib/profiles";
 import { expireStalePromotions } from "@/lib/promotions-server";
 import { expireStaleListings } from "@/lib/listings-server";
 import MyListingsView from "@/components/dashboard/MyListingsView";
@@ -18,7 +18,7 @@ export default async function MyListingsPage() {
 
   const [listings, credits] = await Promise.all([
     getMyListings(supabase, user.id),
-    getRefreshCredits(supabase, user.id),
+    getCreditBalances(supabase, user.id),
   ]);
 
   return (

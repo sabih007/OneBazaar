@@ -3,10 +3,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { CheckCircle2, ImageOff, Pencil, RefreshCw, RotateCcw, Sparkles, Trash2 } from "lucide-react";
+import { CheckCircle2, Flame, ImageOff, Pencil, RefreshCw, RotateCcw, Sparkles, Trash2 } from "lucide-react";
 import type { Listing } from "@/types/database";
 import { createClient } from "@/lib/supabase/client";
 import { deleteListing, markListingSold } from "@/lib/listings";
+import { PROMOTION_RANK } from "@/lib/packages";
 import { formatPKR } from "@/lib/utils";
 import PromoBadge from "@/components/listings/PromoBadge";
 import { Button } from "@/components/ui/Button";
@@ -25,20 +26,38 @@ async function postListingAction(listingId: string, action: "repost" | "refresh"
   if (!res.ok) throw new Error(json?.error ?? "Something went wrong");
 }
 
+async function postApplyCredit(listingId: string, creditType: "featured" | "hot") {
+  const res = await fetch(`/api/listings/${listingId}/apply-credit`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ creditType }),
+  });
+  const json = await res.json().catch(() => null);
+  if (!res.ok) throw new Error(json?.error ?? "Something went wrong");
+}
+
 export default function MyListingRow({
   listing,
   onUpdate,
   onRemove,
   onRestore,
-  creditsAvailable,
-  onCreditSpent,
+  refreshCreditsAvailable,
+  featuredCreditsAvailable,
+  hotCreditsAvailable,
+  onRefreshCreditSpent,
+  onFeaturedCreditSpent,
+  onHotCreditSpent,
 }: {
   listing: Listing;
   onUpdate: (id: string, patch: Partial<Listing>) => void;
   onRemove: (id: string) => void;
   onRestore: (listing: Listing) => void;
-  creditsAvailable: number;
-  onCreditSpent: () => void;
+  refreshCreditsAvailable: number;
+  featuredCreditsAvailable: number;
+  hotCreditsAvailable: number;
+  onRefreshCreditSpent: () => void;
+  onFeaturedCreditSpent: () => void;
+  onHotCreditSpent: () => void;
 }) {
   const [pending, setPending] = useState<string | null>(null);
   const href = `/${listing.category_slug}/${listing.city_slug}/${listing.slug}`;
@@ -72,6 +91,9 @@ export default function MyListingRow({
       setPending(null);
     }
   }
+
+  const canFeature = listing.status === "active" && featuredCreditsAvailable > 0 && listing.promotion_rank < PROMOTION_RANK.featured;
+  const canHot = listing.status === "active" && hotCreditsAvailable > 0 && listing.promotion_rank < PROMOTION_RANK.hot;
 
   return (
     <div className="flex flex-col gap-4 rounded-md border border-line bg-surface p-4 sm:flex-row sm:items-center">
@@ -141,7 +163,7 @@ export default function MyListingRow({
           >
             <RefreshCw className="h-3.5 w-3.5" /> Free refresh
           </Button>
-        ) : listing.status === "active" && creditsAvailable > 0 ? (
+        ) : listing.status === "active" && refreshCreditsAvailable > 0 ? (
           <Button
             size="sm"
             variant="secondary"
@@ -150,13 +172,49 @@ export default function MyListingRow({
             onClick={() =>
               run("refresh", { bumped_at: new Date().toISOString() }, async () => {
                 await postListingAction(listing.id, "refresh");
-                onCreditSpent();
+                onRefreshCreditSpent();
               })
             }
           >
             <RefreshCw className="h-3.5 w-3.5" /> Refresh · 1 credit
           </Button>
         ) : null}
+        {canFeature && (
+          <Button
+            size="sm"
+            variant="secondary"
+            className="gap-1.5"
+            disabled={pending === "feature"}
+            onClick={() =>
+              run(
+                "feature",
+                { badge: "featured", promotion_rank: PROMOTION_RANK.featured },
+                async () => {
+                  await postApplyCredit(listing.id, "featured");
+                  onFeaturedCreditSpent();
+                }
+              )
+            }
+          >
+            <Sparkles className="h-3.5 w-3.5" /> Feature · 1 credit
+          </Button>
+        )}
+        {canHot && (
+          <Button
+            size="sm"
+            variant="secondary"
+            className="gap-1.5"
+            disabled={pending === "hot"}
+            onClick={() =>
+              run("hot", { badge: "hot", promotion_rank: PROMOTION_RANK.hot }, async () => {
+                await postApplyCredit(listing.id, "hot");
+                onHotCreditSpent();
+              })
+            }
+          >
+            <Flame className="h-3.5 w-3.5" /> Make Hot · 1 credit
+          </Button>
+        )}
         {listing.status !== "sold" && listing.status !== "expired" ? (
           <Button
             size="sm"

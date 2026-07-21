@@ -35,3 +35,19 @@ export async function getRefreshCredits(supabase: SupabaseClient, userId: string
   if (error) throw error;
   return (data as { refresh_credits: number }).refresh_credits;
 }
+
+export interface CreditBalances {
+  refresh_credits: number;
+  featured_credits: number;
+  hot_credits: number;
+}
+
+export async function getCreditBalances(supabase: SupabaseClient, userId: string) {
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("refresh_credits, featured_credits, hot_credits")
+    .eq("id", userId)
+    .single();
+  if (error) throw error;
+  return data as CreditBalances;
+}
