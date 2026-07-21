@@ -25,6 +25,7 @@ import AttributesList from "@/components/listings/AttributesList";
 import SafetyNotice from "@/components/listings/SafetyNotice";
 import SaveButton from "@/components/listings/SaveButton";
 import ReportButton from "@/components/listings/ReportButton";
+import ShareButton from "@/components/listings/ShareButton";
 import SellerCard from "@/components/listings/SellerCard";
 import OwnerActions from "@/components/listings/OwnerActions";
 import ListingGrid from "@/components/listings/ListingGrid";
@@ -193,16 +194,19 @@ export default async function ListingDetailPage({ params }: ListingPageProps) {
               {listing.area ? `, ${listing.area}` : ""}
             </p>
 
-            {!isOwner && (
-              <div className="mt-4 flex gap-2">
-                <SaveButton
-                  listingId={listing.id}
-                  userId={user?.id ?? null}
-                  initialFavorited={Boolean(favorite.data)}
-                />
-                <ReportButton listingId={listing.id} userId={user?.id ?? null} />
-              </div>
-            )}
+            <div className="mt-4 flex flex-wrap gap-2">
+              {!isOwner && (
+                <>
+                  <SaveButton
+                    listingId={listing.id}
+                    userId={user?.id ?? null}
+                    initialFavorited={Boolean(favorite.data)}
+                  />
+                  <ReportButton listingId={listing.id} userId={user?.id ?? null} />
+                </>
+              )}
+              <ShareButton title={listing.title} />
+            </div>
 
             <div className="mt-6 border-t border-line pt-6">
               <h2 className="mb-3 font-heading text-base font-semibold text-ink">Details</h2>
