@@ -15,9 +15,16 @@ const tabs = [
   { key: "pending", label: "Pending" },
 ] as const;
 
-export default function MyListingsView({ listings: initialListings }: { listings: Listing[] }) {
+export default function MyListingsView({
+  listings: initialListings,
+  initialCredits,
+}: {
+  listings: Listing[];
+  initialCredits: number;
+}) {
   const [tab, setTab] = useState<(typeof tabs)[number]["key"]>("active");
   const [listings, setListings] = useState(initialListings);
+  const [credits, setCredits] = useState(initialCredits);
   const filtered = listings.filter((l) => l.status === tab);
 
   function updateListing(id: string, patch: Partial<Listing>) {
@@ -73,6 +80,8 @@ export default function MyListingsView({ listings: initialListings }: { listings
               onUpdate={updateListing}
               onRemove={removeListing}
               onRestore={restoreListing}
+              creditsAvailable={credits}
+              onCreditSpent={() => setCredits((c) => Math.max(0, c - 1))}
             />
           ))
         )}

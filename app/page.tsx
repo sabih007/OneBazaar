@@ -82,7 +82,9 @@ export default async function Home() {
       getCategoryCounts(supabase),
       userId ? getFavoritedListingIds(supabase, userId) : Promise.resolve(new Set<string>()),
     ]);
-    featured = featuredResult.listings.filter((l) => l.badge === "featured" || l.badge === "top");
+    featured = featuredResult.listings.filter(
+      (l) => l.badge === "featured" || l.badge === "top" || l.badge === "hot" || l.badge === "super_hot"
+    );
     latest = latestResult.listings;
     categoryCounts = counts;
     favoritedIds = favorited;

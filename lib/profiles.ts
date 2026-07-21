@@ -25,3 +25,13 @@ export async function getSellerPhone(supabase: SupabaseClient, listingId: string
   if (error) throw error;
   return data as string | null;
 }
+
+export async function getRefreshCredits(supabase: SupabaseClient, userId: string) {
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("refresh_credits")
+    .eq("id", userId)
+    .single();
+  if (error) throw error;
+  return (data as { refresh_credits: number }).refresh_credits;
+}

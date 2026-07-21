@@ -65,6 +65,8 @@ export default async function MyPromotionsPage() {
                       >
                         {promo.listing.title}
                       </Link>
+                    ) : promo.listing_id === null ? (
+                      <span className="text-ink-muted">Refresh credits</span>
                     ) : (
                       <span className="text-ink-muted">Listing removed</span>
                     )}

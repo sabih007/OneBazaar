@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { createClient, getUser } from "@/lib/supabase/server";
 import { getMyListings } from "@/lib/listings";
+import { getRefreshCredits } from "@/lib/profiles";
 import { expireStalePromotions } from "@/lib/promotions-server";
 import { expireStaleListings } from "@/lib/listings-server";
 import MyListingsView from "@/components/dashboard/MyListingsView";
@@ -15,12 +16,15 @@ export default async function MyListingsPage() {
   expireStalePromotions(supabase);
   expireStaleListings(supabase);
 
-  const listings = await getMyListings(supabase, user.id);
+  const [listings, credits] = await Promise.all([
+    getMyListings(supabase, user.id),
+    getRefreshCredits(supabase, user.id),
+  ]);
 
   return (
     <div>
       <h1 className="mb-4 font-heading text-2xl font-bold text-ink">My listings</h1>
-      <MyListingsView listings={listings} />
+      <MyListingsView listings={listings} initialCredits={credits} />
     </div>
   );
 }

@@ -51,9 +51,21 @@ async function applyPackageToListing(
       badge: packageRow.badge,
       promotion_rank: packageRow.promotion_rank,
       promoted_until: promotedUntil.toISOString(),
-      is_featured: packageRow.badge === "featured" || packageRow.badge === "top",
+      is_featured: ["featured", "top", "hot", "super_hot"].includes(packageRow.badge ?? ""),
     })
     .eq("id", listingId);
+  if (error) throw error;
+}
+
+/** Credits a bundle purchase to the buyer's wallet instead of applying it to a listing. */
+async function grantRefreshCredits(
+  supabase: SupabaseClient,
+  { userId, credits }: { userId: string; credits: number }
+) {
+  const { error } = await supabase.rpc("increment_refresh_credits", {
+    p_user_id: userId,
+    p_amount: credits,
+  });
   if (error) throw error;
 }
 
@@ -64,7 +76,8 @@ function computeExpiresAt(packageRow: Package) {
 }
 
 export interface PurchasePromotionInput {
-  listingId: string;
+  /** Omitted for a credit-bundle purchase — it isn't promoting any particular listing. */
+  listingId?: string;
   userId: string;
   packageId: string;
   paymentMethod: PaymentMethod;
@@ -87,7 +100,7 @@ export async function createPendingPromotion(
   const { data: promotion, error: insertError } = await supabase
     .from("ad_promotions")
     .insert({
-      listing_id: listingId,
+      listing_id: listingId ?? null,
       user_id: userId,
       package_id: packageId,
       starts_at: now.toISOString(),
@@ -119,7 +132,7 @@ export async function markPromotionPaid(
     .update({ payment_status: "paid", payment_ref: paymentRef })
     .eq("id", promotionId)
     .eq("payment_status", "pending")
-    .select("listing_id, package_id")
+    .select("listing_id, package_id, user_id")
     .maybeSingle();
   if (error) throw error;
   if (!promotion) return; // already paid (duplicate webhook) or unknown id
@@ -130,8 +143,15 @@ export async function markPromotionPaid(
     .eq("id", promotion.package_id)
     .single();
   if (pkgError) throw pkgError;
+  const packageRow = pkg as Package;
 
-  await applyPackageToListing(supabase, { listingId: promotion.listing_id, packageRow: pkg as Package });
+  if (promotion.listing_id === null) {
+    // Credit-bundle purchase — not tied to a listing, credit the wallet instead.
+    await grantRefreshCredits(supabase, { userId: promotion.user_id, credits: packageRow.credits });
+    return;
+  }
+
+  await applyPackageToListing(supabase, { listingId: promotion.listing_id, packageRow });
 }
 
 export async function markPromotionFailed(

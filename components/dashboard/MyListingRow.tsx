@@ -30,11 +30,15 @@ export default function MyListingRow({
   onUpdate,
   onRemove,
   onRestore,
+  creditsAvailable,
+  onCreditSpent,
 }: {
   listing: Listing;
   onUpdate: (id: string, patch: Partial<Listing>) => void;
   onRemove: (id: string) => void;
   onRestore: (listing: Listing) => void;
+  creditsAvailable: number;
+  onCreditSpent: () => void;
 }) {
   const [pending, setPending] = useState<string | null>(null);
   const href = `/${listing.category_slug}/${listing.city_slug}/${listing.slug}`;
@@ -136,6 +140,21 @@ export default function MyListingRow({
             }
           >
             <RefreshCw className="h-3.5 w-3.5" /> Free refresh
+          </Button>
+        ) : listing.status === "active" && creditsAvailable > 0 ? (
+          <Button
+            size="sm"
+            variant="secondary"
+            className="gap-1.5"
+            disabled={pending === "refresh"}
+            onClick={() =>
+              run("refresh", { bumped_at: new Date().toISOString() }, async () => {
+                await postListingAction(listing.id, "refresh");
+                onCreditSpent();
+              })
+            }
+          >
+            <RefreshCw className="h-3.5 w-3.5" /> Refresh · 1 credit
           </Button>
         ) : null}
         {listing.status !== "sold" && listing.status !== "expired" ? (

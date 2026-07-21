@@ -3,8 +3,10 @@ import { createClient, getUser } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 /**
- * Uses the one free refresh included with a free-tier listing (bumps it back
- * to the top of search). Goes through the admin client because
+ * Bumps a listing back to the top of search — the free tier's one-time free
+ * refresh first, then falls back to spending a paid refresh credit
+ * (supabase/migrations/0013's spend_refresh_credit, bought via
+ * /api/credits/checkout). Goes through the admin client because
  * `free_refresh_used_at`/`bumped_at` are both locked to service-role-only
  * writes (supabase/migrations/0008 and 0012) — a user-session client's
  * update would be silently reverted by the protect_listing_promotion_columns
@@ -32,7 +34,18 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     return NextResponse.json({ error: "Only active listings can be refreshed" }, { status: 400 });
   }
   if (listing.free_refresh_used_at) {
-    return NextResponse.json({ error: "The free refresh has already been used on this ad" }, { status: 400 });
+    const { data: spent, error: spendError } = await createAdminClient().rpc("spend_refresh_credit", {
+      p_listing_id: id,
+      p_user_id: user.id,
+    });
+    if (spendError) throw spendError;
+    if (!spent) {
+      return NextResponse.json(
+        { error: "No refresh credits available — buy more on the Credits page." },
+        { status: 400 }
+      );
+    }
+    return NextResponse.json({ ok: true });
   }
 
   const now = new Date().toISOString();

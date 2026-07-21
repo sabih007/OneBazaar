@@ -40,7 +40,7 @@ export async function getListings(supabase: SupabaseClient, filters: ListingFilt
   if (filters.minPrice !== undefined) query = query.gte("price", filters.minPrice);
   if (filters.maxPrice !== undefined) query = query.lte("price", filters.maxPrice);
   if (filters.query) query = query.ilike("title", `%${filters.query}%`);
-  if (filters.featured) query = query.in("badge", ["featured", "top"]);
+  if (filters.featured) query = query.in("badge", ["featured", "top", "hot", "super_hot"]);
 
   switch (filters.sort) {
     case "price_asc":

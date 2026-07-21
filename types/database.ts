@@ -7,7 +7,7 @@
 export type Role = "user" | "admin";
 export type ListingStatus = "active" | "sold" | "pending" | "expired";
 export type Condition = "new" | "used";
-export type Badge = "featured" | "urgent" | "top";
+export type Badge = "featured" | "urgent" | "top" | "hot" | "super_hot";
 export type PaymentMethod = "jazzcash" | "easypaisa" | "card" | "lemonsqueezy";
 export type PaymentStatus = "pending" | "paid" | "failed" | "refunded";
 export type ReportStatus = "open" | "reviewed" | "dismissed";
@@ -23,6 +23,7 @@ export interface Profile {
   is_verified: boolean;
   role: Role;
   created_at: string;
+  refresh_credits: number;
 }
 
 export interface Listing {
@@ -56,18 +57,19 @@ export interface Listing {
 
 export interface Package {
   id: string;
-  key: "featured" | "urgent" | "top" | "bump";
+  key: "featured" | "urgent" | "top" | "bump" | "hot" | "super_hot";
   name: string;
   badge: Badge | null;
   promotion_rank: number;
   duration_days: number;
   price: number;
+  credits: number;
   is_active: boolean;
 }
 
 export interface AdPromotion {
   id: string;
-  listing_id: string;
+  listing_id: string | null;
   user_id: string;
   package_id: string;
   starts_at: string;

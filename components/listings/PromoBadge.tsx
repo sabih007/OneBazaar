@@ -3,6 +3,8 @@ import { cn } from "@/lib/utils";
 import { BADGE_COLOR, BADGE_LABEL, type Badge } from "@/lib/packages";
 
 const BADGE_ICON: Record<Exclude<Badge, null>, typeof Crown> = {
+  super_hot: Crown,
+  hot: Flame,
   top: Crown,
   featured: Sparkles,
   urgent: Flame,
