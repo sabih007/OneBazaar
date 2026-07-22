@@ -48,6 +48,16 @@
   --shadow-elevated: 0 24px 48px -16px rgba(16, 24, 40, 0.22), 0 4px 12px rgba(16, 24, 40, 0.08);
 }
 
+html,
+body {
+  /* Belt-and-suspenders against any element pushing the page wider than the
+     viewport on mobile — components with intentionally wide content (e.g.
+     the comparison table) manage their own overflow-x-auto locally, which
+     keeps working independent of this; this just stops the outer page
+     itself from ever scrolling sideways. */
+  overflow-x: hidden;
+}
+
 body {
   background: var(--color-background);
   color: var(--color-ink);
