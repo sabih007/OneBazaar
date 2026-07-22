@@ -57,7 +57,7 @@ export default function NewsletterForm() {
         <button
           type="submit"
           disabled={status === "loading"}
-          className="h-11 shrink-0 rounded-md bg-primary px-5 text-sm font-semibold text-ink transition-colors hover:bg-primary-hover disabled:opacity-60"
+          className="h-11 shrink-0 rounded-md bg-primary px-5 text-sm font-semibold text-white transition-colors hover:bg-primary-hover disabled:opacity-60"
         >
           {status === "loading" ? "Subscribing…" : "Subscribe"}
         </button>

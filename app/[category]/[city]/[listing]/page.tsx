@@ -12,7 +12,7 @@ import { getPublicProfile } from "@/lib/profiles";
 import { expireStalePromotions } from "@/lib/promotions-server";
 import { createClient, getUser } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/is-configured";
-import { formatPKR } from "@/lib/utils";
+import { formatListingPrice } from "@/lib/utils";
 import {
   breadcrumbListJsonLd,
   listingJsonLd,
@@ -28,9 +28,11 @@ import ReportButton from "@/components/listings/ReportButton";
 import ShareButton from "@/components/listings/ShareButton";
 import SellerCard from "@/components/listings/SellerCard";
 import OwnerActions from "@/components/listings/OwnerActions";
+import PromoteUpsellCard from "@/components/listings/PromoteUpsellCard";
 import ListingGrid from "@/components/listings/ListingGrid";
 import AdSlot from "@/components/ads/AdSlot";
 import { AD_SLOTS } from "@/lib/ads";
+import { MapPin } from "lucide-react";
 
 interface ListingPageParams {
   category: string;
@@ -59,13 +61,6 @@ export async function generateMetadata({ params }: ListingPageProps): Promise<Me
   return {
     title,
     description,
-    keywords: [
-      listing.title,
-      `${listing.title} ${cityName}`,
-      `${listing.category} classified ads ${cityName}`,
-      listing.category,
-      "classified ads",
-    ],
     alternates: { canonical: url },
     openGraph: {
       title,
@@ -186,10 +181,11 @@ export default async function ListingDetailPage({ params }: ListingPageProps) {
               )}
             </div>
             <p className="mt-3 font-heading text-4xl font-bold text-ink">
-              {formatPKR(listing.price)}
+              {formatListingPrice(listing.price, listing.category_slug)}
             </p>
             <h1 className="mt-1 text-lg font-semibold text-ink">{listing.title}</h1>
-            <p className="mt-1 text-sm text-ink-muted">
+            <p className="mt-1 flex items-center gap-1 text-sm text-ink-muted">
+              <MapPin className="h-3.5 w-3.5 shrink-0" aria-hidden />
               {listing.city}
               {listing.area ? `, ${listing.area}` : ""}
             </p>
@@ -233,7 +229,7 @@ export default async function ListingDetailPage({ params }: ListingPageProps) {
             />
           )}
           <SafetyNotice />
-          <AdSlot slot={AD_SLOTS.listingSidebar} label="Listing sidebar" className="h-72" />
+          <PromoteUpsellCard listingId={listing.id} isOwner={isOwner} />
         </div>
       </div>
 

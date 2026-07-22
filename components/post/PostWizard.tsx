@@ -74,6 +74,12 @@ export default function PostWizard({ userId }: { userId: string }) {
         attributes: values.attributes,
       });
 
+      fetch("/api/listings/notify-saved-searches", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ listingId: listing.id }),
+      }).catch(() => {});
+
       router.push(`/${listing.category_slug}/${listing.city_slug}/${listing.slug}`);
       router.refresh();
     } catch (err) {
@@ -93,7 +99,7 @@ export default function PostWizard({ userId }: { userId: string }) {
                 className={cn(
                   "flex h-8 w-8 items-center justify-center rounded-full text-xs font-semibold transition-colors",
                   i < step
-                    ? "bg-primary text-ink"
+                    ? "bg-primary text-white"
                     : i === step
                       ? "bg-primary-light text-primary-text ring-2 ring-primary"
                       : "bg-background text-ink-muted"

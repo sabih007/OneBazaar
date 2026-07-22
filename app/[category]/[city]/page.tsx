@@ -28,7 +28,6 @@ export async function generateMetadata({ params }: BrowsePageProps): Promise<Met
   if (!category || !city) return {};
 
   const categoryLower = category.name.toLowerCase();
-  const cityLower = city.name.toLowerCase();
   const title = `${category.name} Classified Ads in ${city.name} | Buysellox.com`;
   const description = `Free classified ads for ${categoryLower} in ${city.name}, Pakistan. Browse ${category.subcategories.length ? `${category.subcategories.map((s) => s.name.toLowerCase()).slice(0, 3).join(", ")} and more — ` : ""}thousands of verified listings with prices in Rs. on Buysellox.com. Post your classified ad free, no commission.`;
   const canonical = `/${category.slug}/${city.slug}`;
@@ -36,14 +35,6 @@ export async function generateMetadata({ params }: BrowsePageProps): Promise<Met
   return {
     title,
     description,
-    keywords: [
-      `${categoryLower} classified ads ${cityLower}`,
-      `${categoryLower} in ${cityLower}`,
-      `${categoryLower} for sale ${cityLower}`,
-      `buy ${categoryLower} ${cityLower}`,
-      `sell ${categoryLower} ${cityLower}`,
-      `free classified ads ${cityLower}`,
-    ],
     alternates: { canonical },
     openGraph: { title, description, url: canonical, type: "website", locale: "en_PK" },
   };
@@ -60,6 +51,7 @@ export default async function BrowsePage({ params, searchParams }: BrowsePagePro
   let listings: Awaited<ReturnType<typeof getListings>>["listings"] = [];
   let total = 0;
   let userId: string | null = null;
+  let userEmail: string | null = null;
   let favoritedIds = new Set<string>();
 
   if (isSupabaseConfigured) {
@@ -67,6 +59,7 @@ export default async function BrowsePage({ params, searchParams }: BrowsePagePro
     expireStalePromotions(supabase);
     const user = await getUser();
     userId = user?.id ?? null;
+    userEmail = user?.email ?? null;
 
     const [result, favorited] = await Promise.all([
       getListings(supabase, {
@@ -130,7 +123,14 @@ export default async function BrowsePage({ params, searchParams }: BrowsePagePro
       </p>
 
       <div className="mt-5">
-        <Filters subcategories={category.subcategories} hasCondition={category.hasCondition} />
+        <Filters
+          subcategories={category.subcategories}
+          hasCondition={category.hasCondition}
+          categorySlug={category.slug}
+          citySlug={city.slug}
+          userId={userId}
+          userEmail={userEmail}
+        />
       </div>
 
       <div className="mt-5">

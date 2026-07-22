@@ -113,7 +113,7 @@ export default function NotFound() {
                   href={`/${c.slug}/lahore`}
                   className="group flex items-center gap-3 rounded-[var(--radius-lg)] border border-line bg-surface p-4 text-left shadow-[var(--shadow-card)] transition-all duration-300 hover:-translate-y-1 hover:border-primary/20 hover:shadow-[var(--shadow-card-hover)]"
                 >
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary-light text-primary-text transition-colors duration-300 group-hover:bg-primary group-hover:text-ink">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary-light text-primary-text transition-colors duration-300 group-hover:bg-primary group-hover:text-white">
                     <Icon className="h-5 w-5" />
                   </span>
                   <span className="text-sm font-medium text-ink">{c.name}</span>

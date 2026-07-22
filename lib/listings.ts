@@ -26,6 +26,25 @@ export async function getActiveSlotLimit(supabase: SupabaseClient, userId: strin
   return (data as { active_slot_limit: number } | null)?.active_slot_limit ?? FREE_TIER_ACTIVE_LIMIT;
 }
 
+/**
+ * Attaches `seller_is_verified` to each listing for the "Verified Seller"
+ * card badge. Goes through `profiles_public` (not `profiles`) since RLS
+ * blocks reading anyone else's row from the base table — see
+ * 0001_init.sql's "phone stays hidden" note.
+ */
+async function attachSellerVerified<T extends Listing>(
+  supabase: SupabaseClient,
+  listings: T[]
+): Promise<(T & { seller_is_verified: boolean })[]> {
+  const userIds = [...new Set(listings.map((l) => l.user_id))];
+  if (userIds.length === 0) return listings as (T & { seller_is_verified: boolean })[];
+
+  const { data } = await supabase.from("profiles_public").select("id, is_verified").in("id", userIds);
+  const verifiedMap = new Map((data ?? []).map((p) => [p.id as string, p.is_verified as boolean]));
+
+  return listings.map((l) => ({ ...l, seller_is_verified: verifiedMap.get(l.user_id) ?? false }));
+}
+
 export interface ListingFilters {
   categorySlug?: string;
   citySlug?: string;
@@ -87,7 +106,8 @@ export async function getListings(supabase: SupabaseClient, filters: ListingFilt
   const { data, error, count } = await query;
   if (error) throw error;
 
-  return { listings: (data ?? []) as Listing[], total: count ?? 0, page, pageSize };
+  const listings = await attachSellerVerified(supabase, (data ?? []) as Listing[]);
+  return { listings, total: count ?? 0, page, pageSize };
 }
 
 /** Active listing count per category, for the homepage category cards. */
@@ -134,7 +154,7 @@ export async function getSimilarListings(
     .limit(6);
 
   if (error) throw error;
-  return (data ?? []) as Listing[];
+  return attachSellerVerified(supabase, (data ?? []) as Listing[]);
 }
 
 export async function getMyListings(supabase: SupabaseClient, userId: string) {
@@ -156,9 +176,10 @@ export async function getFavoriteListings(supabase: SupabaseClient, userId: stri
     .order("created_at", { ascending: false });
 
   if (error) throw error;
-  return ((data ?? []) as unknown as { listing: Listing | null }[])
+  const listings = ((data ?? []) as unknown as { listing: Listing | null }[])
     .map((row) => row.listing)
     .filter((listing): listing is Listing => listing !== null);
+  return attachSellerVerified(supabase, listings);
 }
 
 /** IDs of listings the user has favorited, for marking hearts filled in a listing grid/slider. */

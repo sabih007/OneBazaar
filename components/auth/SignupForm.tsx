@@ -6,7 +6,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { signupSchema, type SignupInput } from "@/lib/validations/auth";
-import { createClient } from "@/lib/supabase/client";
 import { cities } from "@/lib/cities";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -27,26 +26,20 @@ export default function SignupForm() {
 
   async function onSubmit(values: SignupInput) {
     setFormError(null);
-    const supabase = createClient();
-    const { error } = await supabase.auth.signUp({
-      email: values.email,
-      password: values.password,
-      options: {
-        data: {
-          full_name: values.fullName,
-          phone: values.phone,
-          city: values.city,
-        },
-      },
+    const res = await fetch("/api/auth/signup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(values),
     });
+    const data = await res.json();
 
-    if (error) {
-      setFormError(error.message);
+    if (!res.ok) {
+      setFormError(data.error ?? "Could not create your account.");
       return;
     }
 
     const redirect = searchParams.get("redirect") || "/";
-    const params = new URLSearchParams({ email: values.email, redirect });
+    const params = new URLSearchParams({ email: values.email, userId: data.userId, redirect });
     router.push(`/verify?${params.toString()}`);
   }
 

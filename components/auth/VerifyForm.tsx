@@ -6,7 +6,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { verifyOtpSchema, type VerifyOtpInput } from "@/lib/validations/auth";
-import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
@@ -15,6 +14,7 @@ export default function VerifyForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const email = searchParams.get("email") ?? "";
+  const userId = searchParams.get("userId") ?? "";
   const redirect = searchParams.get("redirect") || "/";
   const [formError, setFormError] = useState<string | null>(null);
   const [resent, setResent] = useState(false);
@@ -28,15 +28,15 @@ export default function VerifyForm() {
 
   async function onSubmit(values: VerifyOtpInput) {
     setFormError(null);
-    const supabase = createClient();
-    const { error } = await supabase.auth.verifyOtp({
-      email,
-      token: values.code,
-      type: "signup",
+    const res = await fetch("/api/auth/email-otp/verify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId, email, code: values.code }),
     });
+    const data = await res.json();
 
-    if (error) {
-      setFormError(error.message);
+    if (!res.ok) {
+      setFormError(data.error ?? "Could not verify your code.");
       return;
     }
 
@@ -48,18 +48,22 @@ export default function VerifyForm() {
     setFormError(null);
     setResent(false);
     setResending(true);
-    const supabase = createClient();
-    const { error } = await supabase.auth.resend({ type: "signup", email });
+    const res = await fetch("/api/auth/email-otp/resend", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId, email }),
+    });
+    const data = await res.json();
     setResending(false);
 
-    if (error) {
-      setFormError(error.message);
+    if (!res.ok) {
+      setFormError(data.error ?? "Could not resend code.");
       return;
     }
     setResent(true);
   }
 
-  if (!email) {
+  if (!email || !userId) {
     return (
       <div>
         <h1 className="font-heading text-2xl font-semibold text-ink">Verify your email</h1>

@@ -2,7 +2,10 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, type FormEvent } from "react";
+import { BellPlus } from "lucide-react";
 import type { Subcategory } from "@/lib/categories";
+import { createClient } from "@/lib/supabase/client";
+import { createSavedSearch } from "@/lib/saved-searches";
 import { Select } from "@/components/ui/Select";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
@@ -10,14 +13,50 @@ import { Button } from "@/components/ui/Button";
 interface FiltersProps {
   subcategories: Subcategory[];
   hasCondition?: boolean;
+  categorySlug: string;
+  citySlug: string;
+  userId?: string | null;
+  userEmail?: string | null;
 }
 
-export default function Filters({ subcategories, hasCondition }: FiltersProps) {
+export default function Filters({
+  subcategories,
+  hasCondition,
+  categorySlug,
+  citySlug,
+  userId,
+  userEmail,
+}: FiltersProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
   const [minPrice, setMinPrice] = useState(searchParams.get("min") ?? "");
   const [maxPrice, setMaxPrice] = useState(searchParams.get("max") ?? "");
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+
+  async function onNotifyMe() {
+    if (!userId || !userEmail) {
+      router.push("/login?redirect=" + encodeURIComponent(window.location.pathname + window.location.search));
+      return;
+    }
+    setSaving(true);
+    try {
+      await createSavedSearch(createClient(), {
+        userId,
+        email: userEmail,
+        categorySlug,
+        citySlug,
+        subcategorySlug: searchParams.get("sub") || null,
+        condition: (searchParams.get("condition") as "new" | "used" | null) || null,
+        minPrice: searchParams.get("min") ? Number(searchParams.get("min")) : null,
+        maxPrice: searchParams.get("max") ? Number(searchParams.get("max")) : null,
+      });
+      setSaved(true);
+    } finally {
+      setSaving(false);
+    }
+  }
 
   function updateParam(key: string, value: string) {
     const params = new URLSearchParams(searchParams.toString());
@@ -97,7 +136,7 @@ export default function Filters({ subcategories, hasCondition }: FiltersProps) {
         </Button>
       </form>
 
-      <div className="ml-auto w-full sm:w-auto">
+      <div className="w-full sm:w-auto">
         <label className="mb-1.5 block text-xs font-medium text-ink-muted">Sort by</label>
         <Select
           className="min-w-[160px]"
@@ -109,6 +148,20 @@ export default function Filters({ subcategories, hasCondition }: FiltersProps) {
           <option value="price_asc">Price: low to high</option>
           <option value="price_desc">Price: high to low</option>
         </Select>
+      </div>
+
+      <div className="ml-auto w-full sm:w-auto">
+        <Button
+          type="button"
+          variant="secondary"
+          size="md"
+          className="w-full gap-1.5 sm:w-auto"
+          onClick={onNotifyMe}
+          disabled={saving || saved}
+        >
+          <BellPlus className="h-4 w-4" aria-hidden />
+          {saved ? "Saved — we'll email you" : saving ? "Saving…" : "Notify me of new ads"}
+        </Button>
       </div>
     </div>
   );

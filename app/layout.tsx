@@ -31,17 +31,6 @@ export const metadata: Metadata = {
     template: `%s | ${SITE_NAME}`,
   },
   description: SITE_DESCRIPTION,
-  keywords: [
-    "free classified ads Pakistan",
-    "online classified ads Pakistan",
-    "post classified ads online",
-    "classified ads website Pakistan",
-    "buy and sell Pakistan",
-    "online classifieds Pakistan",
-    "OLX Pakistan alternative",
-    "used cars for sale Pakistan",
-    "houses for sale Pakistan",
-  ],
   applicationName: SITE_NAME,
   robots: {
     index: true,

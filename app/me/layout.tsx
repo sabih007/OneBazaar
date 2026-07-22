@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Crown, Heart, MessageCircle, Settings, Sparkles, User, Zap } from "lucide-react";
+import { BellPlus, Crown, Heart, MessageCircle, Settings, Sparkles, User, Zap } from "lucide-react";
 import { getUser } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/is-configured";
 
 const navItems = [
   { href: "/me", label: "My listings", icon: User },
   { href: "/me/favorites", label: "Favorites", icon: Heart },
+  { href: "/me/saved-searches", label: "Saved searches", icon: BellPlus },
   { href: "/me/chats", label: "Inbox", icon: MessageCircle },
   { href: "/me/promotions", label: "My promotions", icon: Sparkles },
   { href: "/me/credits", label: "Refresh credits", icon: Zap },

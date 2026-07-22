@@ -3,12 +3,14 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { ArrowUpRight, Eye, Heart, ImageOff, MapPin } from "lucide-react";
+import { ArrowUpRight, Clock, Heart, ImageOff, MapPin, MessageCircle, ShieldCheck } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import type { Listing } from "@/types/database";
-import { formatPKR, cn } from "@/lib/utils";
+import { formatListingPrice, cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
 import { toggleFavorite } from "@/lib/listings";
+import { getCategory } from "@/lib/categories";
+import { getCardAttributes } from "@/lib/attribute-display";
 import PromoBadge from "@/components/listings/PromoBadge";
 import ShareButton from "@/components/listings/ShareButton";
 
@@ -28,8 +30,12 @@ export default function ListingCard({
 }: ListingCardProps) {
   const [favorited, setFavorited] = useState(isFavorited);
   const [pending, setPending] = useState(false);
+  const [imageFailed, setImageFailed] = useState(false);
   const cover = listing.images?.[0];
   const isFeatured = variant === "featured";
+  const cardAttributes = isFeatured
+    ? getCardAttributes(getCategory(listing.category_slug), listing.attributes)
+    : [];
 
   async function onToggleFavorite(e: React.MouseEvent) {
     e.preventDefault();
@@ -66,7 +72,7 @@ export default function ListingCard({
           isFeatured ? "aspect-[16/11]" : "aspect-[4/3]"
         )}
       >
-        {cover ? (
+        {cover && !imageFailed ? (
           <Image
             src={cover}
             alt={`${listing.title} — ${listing.city}`}
@@ -77,6 +83,7 @@ export default function ListingCard({
                 : "(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
             }
             className="object-cover transition-transform duration-500 ease-out group-hover:scale-110"
+            onError={() => setImageFailed(true)}
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center text-ink-muted">
@@ -139,36 +146,40 @@ export default function ListingCard({
         )}
       >
         <div className="flex items-start justify-between gap-2">
-          <p
-            className={cn(
-              "font-heading font-bold text-primary-text",
-              isFeatured ? "text-2xl sm:text-[1.75rem]" : "text-lg"
+          <div className="flex flex-wrap items-center gap-2">
+            <p
+              className={cn(
+                "font-heading font-bold text-primary-text",
+                isFeatured ? "text-2xl sm:text-[1.75rem]" : "text-lg"
+              )}
+            >
+              {formatListingPrice(listing.price, listing.category_slug)}
+            </p>
+            {listing.condition && (
+              <span
+                className={cn(
+                  "inline-block rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide",
+                  listing.condition === "new"
+                    ? "border-success/20 bg-success/10 text-success"
+                    : "border-line bg-surface text-ink-muted"
+                )}
+              >
+                {listing.condition}
+              </span>
             )}
-          >
-            {formatPKR(listing.price)}
-          </p>
+          </div>
           <span
             aria-hidden
             className={cn(
-              "flex shrink-0 items-center justify-center rounded-full bg-primary-light text-primary-text opacity-0 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0 translate-x-1",
-              isFeatured ? "mt-0.5 h-7 w-7" : "mt-0.5 h-6 w-6"
+              "flex shrink-0 items-center justify-center text-primary-text transition-all duration-300",
+              isFeatured
+                ? "h-9 w-9 rounded-xl bg-primary-light"
+                : "h-6 w-6 rounded-full bg-primary-light opacity-0 translate-x-1 group-hover:opacity-100 group-hover:translate-x-0"
             )}
           >
-            <ArrowUpRight className={isFeatured ? "h-4 w-4" : "h-3.5 w-3.5"} />
+            <ArrowUpRight className={isFeatured ? "h-4.5 w-4.5" : "h-3.5 w-3.5"} />
           </span>
         </div>
-        {listing.condition && (
-          <span
-            className={cn(
-              "mt-1 inline-block rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide",
-              listing.condition === "new"
-                ? "bg-success/10 text-success"
-                : "bg-ink-muted/10 text-ink-muted"
-            )}
-          >
-            {listing.condition}
-          </span>
-        )}
         <h3
           className={cn(
             "text-ink",
@@ -178,16 +189,42 @@ export default function ListingCard({
         >
           {listing.title}
         </h3>
+
         {isFeatured ? (
-          <p className="mt-auto flex items-center gap-2 pt-2.5 text-xs text-ink-muted">
-            <span>{formatDistanceToNow(new Date(listing.created_at), { addSuffix: true })}</span>
-            {listing.views_count > 0 && (
-              <span className="flex items-center gap-1 border-l border-line pl-2">
-                <Eye className="h-3 w-3" aria-hidden />
-                {listing.views_count.toLocaleString()}
-              </span>
+          <>
+            {cardAttributes.length > 0 && (
+              <div className="mt-4 grid grid-cols-2 gap-x-3 gap-y-3 rounded-[var(--radius-lg)] border border-line bg-background/60 p-3 sm:grid-cols-4">
+                {cardAttributes.map(({ key, label, value, icon: Icon }) => (
+                  <div key={key} className="flex items-center gap-2 min-w-0">
+                    <Icon className="h-4 w-4 shrink-0 text-primary-text" aria-hidden />
+                    <div className="min-w-0">
+                      <p className="truncate text-xs font-semibold text-ink">{value}</p>
+                      <p className="truncate text-[10px] text-ink-muted">{label}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
             )}
-          </p>
+
+            <div className="mt-auto flex items-center justify-between gap-3 border-t border-line pt-3.5">
+              <div className="flex min-w-0 items-center gap-3 text-xs text-ink-muted">
+                <span className="flex items-center gap-1.5">
+                  <Clock className="h-3.5 w-3.5 shrink-0" aria-hidden />
+                  {formatDistanceToNow(new Date(listing.created_at), { addSuffix: true })}
+                </span>
+                {listing.seller_is_verified && (
+                  <span className="flex items-center gap-1.5 border-l border-line pl-3">
+                    <ShieldCheck className="h-3.5 w-3.5 shrink-0 text-success" aria-hidden />
+                    Verified
+                  </span>
+                )}
+              </div>
+              <span className="flex shrink-0 items-center gap-1.5 rounded-full bg-primary px-3.5 py-2 text-xs font-semibold text-white">
+                <MessageCircle className="h-3.5 w-3.5" aria-hidden />
+                View Details
+              </span>
+            </div>
+          </>
         ) : (
           <p className="mt-auto truncate pt-1.5 text-xs text-ink-muted">
             {listing.city}

@@ -73,7 +73,7 @@ export default function BetaPartnerPopup() {
         </button>
 
         <div className="bg-gradient-to-br from-primary-light/80 to-surface px-6 pt-8 text-center">
-          <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-primary text-ink shadow-[var(--shadow-card)]">
+          <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-primary text-white shadow-[var(--shadow-card)]">
             <Rocket className="h-6 w-6" aria-hidden />
           </span>
           <span className="mt-4 inline-block rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-primary-text">
@@ -97,7 +97,7 @@ export default function BetaPartnerPopup() {
             <Link
               href="/partner"
               onClick={() => setOpen(false)}
-              className="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-5 py-3 text-sm font-semibold text-ink transition-colors hover:bg-primary-hover"
+              className="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-primary-hover"
             >
               <Handshake className="h-4 w-4" aria-hidden />
               Become a partner

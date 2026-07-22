@@ -80,8 +80,8 @@ export default function ImageUploader({ userId, images, onChange }: ImageUploade
           >
             <Image src={src} alt="" fill sizes="150px" className="object-cover" />
             {i === 0 && (
-              <span className="absolute left-1.5 top-1.5 flex items-center gap-1 rounded-full bg-primary px-2 py-0.5 text-[10px] font-semibold text-ink">
-                <Star className="h-2.5 w-2.5 fill-ink" /> Cover
+              <span className="absolute left-1.5 top-1.5 flex items-center gap-1 rounded-full bg-primary px-2 py-0.5 text-[10px] font-semibold text-white">
+                <Star className="h-2.5 w-2.5 fill-white" /> Cover
               </span>
             )}
             <button

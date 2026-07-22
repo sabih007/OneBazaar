@@ -82,7 +82,7 @@ export default function PackagePicker({
                   </p>
                 </div>
                 {selectedId === pkg.id && (
-                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary text-ink">
+                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary text-white">
                     <Check className="h-3.5 w-3.5" aria-hidden />
                   </span>
                 )}

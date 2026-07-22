@@ -15,16 +15,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: SITE_URL, changeFrequency: "daily", priority: 1 },
   ];
 
-  for (const category of categories) {
-    for (const city of cities) {
-      entries.push({
-        url: `${SITE_URL}/${category.slug}/${city.slug}`,
-        changeFrequency: "daily",
-        priority: 0.8,
-      });
-    }
-  }
-
   if (isSupabaseConfigured) {
     const supabase = createPublicClient();
     const { data } = await supabase
@@ -35,13 +25,30 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       .order("created_at", { ascending: false })
       .range(0, MAX_LISTINGS - 1);
 
+    // Only submit category × city pages that actually have inventory —
+    // an empty browse page is worse for crawl budget/ranking than not
+    // listing it at all.
+    const combosWithInventory = new Set<string>();
+
     for (const listing of data ?? []) {
+      combosWithInventory.add(`${listing.category_slug}/${listing.city_slug}`);
       entries.push({
         url: `${SITE_URL}/${listing.category_slug}/${listing.city_slug}/${listing.slug}`,
         lastModified: listing.created_at,
         changeFrequency: "weekly",
         priority: 0.6,
       });
+    }
+
+    for (const category of categories) {
+      for (const city of cities) {
+        if (!combosWithInventory.has(`${category.slug}/${city.slug}`)) continue;
+        entries.push({
+          url: `${SITE_URL}/${category.slug}/${city.slug}`,
+          changeFrequency: "daily",
+          priority: 0.8,
+        });
+      }
     }
   }
 

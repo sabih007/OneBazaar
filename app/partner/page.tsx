@@ -54,7 +54,7 @@ export default function PartnerPage() {
           <div className="mt-8">
             <Link
               href="#apply"
-              className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-ink shadow-[var(--shadow-card)] transition-transform hover:-translate-y-0.5"
+              className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-white shadow-[var(--shadow-card)] transition-transform hover:-translate-y-0.5"
             >
               Apply now
             </Link>
@@ -106,7 +106,7 @@ export default function PartnerPage() {
                 }
               >
                 {tier.highlight && (
-                  <span className="absolute -top-3 left-1/2 inline-flex -translate-x-1/2 items-center gap-1 rounded-full bg-primary px-3 py-1 text-xs font-semibold text-ink">
+                  <span className="absolute -top-3 left-1/2 inline-flex -translate-x-1/2 items-center gap-1 rounded-full bg-primary px-3 py-1 text-xs font-semibold text-white">
                     <Crown className="h-3.5 w-3.5" aria-hidden />
                     Most popular
                   </span>
@@ -125,7 +125,7 @@ export default function PartnerPage() {
                   href="#apply"
                   className={
                     tier.highlight
-                      ? "mt-6 flex w-full items-center justify-center rounded-md bg-primary px-4 py-2.5 text-sm font-semibold text-ink transition-colors hover:bg-primary-hover"
+                      ? "mt-6 flex w-full items-center justify-center rounded-md bg-primary px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-primary-hover"
                       : "mt-6 flex w-full items-center justify-center rounded-md border border-line px-4 py-2.5 text-sm font-semibold text-ink transition-colors hover:border-primary hover:text-primary-text"
                   }
                 >

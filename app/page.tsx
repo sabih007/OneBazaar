@@ -16,10 +16,14 @@ import {
   CirclePlus,
   MessageCircle,
   Handshake,
+  Sparkles,
+  Zap,
+  Heart,
 } from "lucide-react";
 import { categories } from "@/lib/categories";
 import { cities } from "@/lib/cities";
 import { getCategoryCounts, getFavoritedListingIds, getListings } from "@/lib/listings";
+import { cn } from "@/lib/utils";
 import { expireStalePromotions } from "@/lib/promotions-server";
 import { expireStaleListings } from "@/lib/listings-server";
 import { createClient, getUser } from "@/lib/supabase/server";
@@ -28,7 +32,6 @@ import ListingCard from "@/components/listings/ListingCard";
 import ListingSlider from "@/components/listings/ListingSlider";
 import AdSlot from "@/components/ads/AdSlot";
 import { AD_SLOTS } from "@/lib/ads";
-import SearchBar from "@/components/layout/SearchBar";
 import ComparisonSection from "@/components/marketing/ComparisonSection";
 
 export const revalidate = 60;
@@ -44,6 +47,34 @@ const categoryIcons: Record<string, React.ComponentType<{ className?: string }>>
   "fashion-beauty": Shirt,
   "business-industry": Factory,
 };
+
+const categoryDescriptions: Record<string, string> = {
+  "property-for-sale": "Houses, plots & commercial property",
+  "property-for-rent": "Homes, flats & commercial space",
+  vehicles: "Cars, bikes & auto parts",
+  mobiles: "Phones, tablets & accessories",
+  "electronics-appliances": "TVs, laptops & appliances",
+  animals: "Pets, livestock & poultry",
+  "furniture-home": "Sofas, beds & home decor",
+  "fashion-beauty": "Clothing, watches & footwear",
+  "business-industry": "Machinery, equipment & more",
+};
+
+/** Cycled across the 9 category cards — kept to our existing tokens rather than introducing new hues. */
+const categoryColorPalette = [
+  { tile: "bg-primary", glow: "bg-primary/15", pillBg: "bg-primary/10", pillText: "text-primary-text" },
+  { tile: "bg-gold", glow: "bg-gold/15", pillBg: "bg-gold/10", pillText: "text-gold" },
+  { tile: "bg-success", glow: "bg-success/15", pillBg: "bg-success/10", pillText: "text-success" },
+  { tile: "bg-ink", glow: "bg-ink/10", pillBg: "bg-ink/5", pillText: "text-ink" },
+  { tile: "bg-primary-hover", glow: "bg-primary-hover/15", pillBg: "bg-primary-hover/10", pillText: "text-primary-hover" },
+];
+
+const trustPoints = [
+  { icon: ShieldCheck, title: "Trusted Platform", subtitle: "Verified sellers & buyers" },
+  { icon: Tag, title: "Great Deals", subtitle: "Best prices, every day" },
+  { icon: Zap, title: "Quick & Easy", subtitle: "Post or find in minutes" },
+  { icon: Heart, title: "All in One Place", subtitle: "Everything you need" },
+];
 
 const howItWorks = [
   {
@@ -91,6 +122,8 @@ export default async function Home() {
     favoritedIds = favorited;
   }
 
+  const featuredDisplay = featured.slice(0, 8);
+
   return (
     <div>
       <section className="relative overflow-hidden border-b border-line bg-gradient-to-b from-primary-light/70 via-primary-light/20 to-background">
@@ -103,7 +136,7 @@ export default async function Home() {
           className="pointer-events-none absolute -right-16 top-8 h-64 w-64 rounded-full bg-gold/20 blur-3xl"
         />
 
-        <div className="container-app relative py-16 text-center sm:py-24">
+        <div className="container-app relative py-10 text-center sm:py-14">
           <h1 className="font-heading text-4xl font-bold tracking-tight text-ink sm:text-6xl">
             Buy &amp; sell anything, <span className="text-primary-text">near you</span>
           </h1>
@@ -112,11 +145,10 @@ export default async function Home() {
             city in Pakistan.
           </p>
 
-          <div className="mx-auto mt-8 max-w-xl">
-            <SearchBar />
-          </div>
-
-          <div className="mx-auto mt-6 flex max-w-md flex-wrap justify-center gap-2">
+          {/* Header.tsx already renders a search bar at every breakpoint
+              (desktop row + a separate md:hidden mobile row), so a second one
+              here was pure duplication — city chips carry the hero instead. */}
+          <div className="mx-auto mt-8 flex max-w-md flex-wrap justify-center gap-2">
             {cities.slice(0, 6).map((c) => (
               <Link
                 key={c.slug}
@@ -146,35 +178,88 @@ export default async function Home() {
       </section>
 
       <section className="container-app py-12">
-        <h2 className="font-heading text-2xl font-semibold text-ink">Browse categories</h2>
-        <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 md:grid-cols-5">
-          {categories.map((c) => {
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-primary-light px-3 py-1 text-xs font-semibold uppercase tracking-wide text-primary-text">
+          <Sparkles className="h-3.5 w-3.5" aria-hidden />
+          Explore
+        </span>
+        <h2 className="mt-3 font-heading text-2xl font-bold text-ink sm:text-3xl">Browse Categories</h2>
+        <p className="mt-1 text-sm text-ink-muted">Find exactly what you&apos;re looking for</p>
+
+        <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {categories.map((c, i) => {
             const Icon = categoryIcons[c.slug] ?? Building2;
             const count = categoryCounts[c.slug] ?? 0;
+            const palette = categoryColorPalette[i % categoryColorPalette.length];
             return (
               <Link
                 key={c.slug}
                 href={`/${c.slug}/lahore`}
-                className="group relative flex flex-col items-center gap-3 overflow-hidden rounded-[var(--radius-lg)] border border-line bg-gradient-to-b from-surface to-primary-light/25 p-5 text-center shadow-[var(--shadow-card)] transition-all duration-300 ease-out hover:-translate-y-1.5 hover:border-primary/30 hover:shadow-[var(--shadow-card-hover)]"
+                className="group relative flex items-center gap-4 overflow-hidden rounded-[var(--radius-lg)] border border-line bg-surface p-5 shadow-[var(--shadow-card)] transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-[var(--shadow-card-hover)]"
               >
                 <span
                   aria-hidden
-                  className="pointer-events-none absolute -right-6 -top-6 h-20 w-20 rounded-full bg-primary/10 blur-2xl transition-transform duration-500 ease-out group-hover:scale-125"
+                  className={cn(
+                    "pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full blur-3xl transition-transform duration-500 ease-out group-hover:scale-125",
+                    palette.glow
+                  )}
                 />
-                <span className="relative flex h-14 w-14 items-center justify-center rounded-full bg-primary-light text-primary-text shadow-sm transition-all duration-300 ease-out group-hover:scale-110 group-hover:bg-primary group-hover:text-ink">
+
+                <span
+                  className={cn(
+                    "relative z-10 flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-white shadow-sm",
+                    palette.tile
+                  )}
+                >
                   <Icon className="h-6 w-6" />
                 </span>
-                <span className="relative flex flex-col items-center gap-0.5">
-                  <span className="text-sm font-semibold text-ink">{c.name}</span>
+
+                <div className="relative z-10 min-w-0 flex-1">
+                  <p className="font-heading text-base font-bold text-ink">{c.name}</p>
+                  <p className="mt-0.5 line-clamp-2 text-xs text-ink-muted">
+                    {categoryDescriptions[c.slug]}
+                  </p>
                   {count > 0 && (
-                    <span className="text-xs text-ink-muted">
-                      {count.toLocaleString()} {count === 1 ? "ad" : "ads"}
+                    <span
+                      className={cn(
+                        "mt-2 inline-block rounded-full px-2.5 py-1 text-[11px] font-semibold",
+                        palette.pillBg,
+                        palette.pillText
+                      )}
+                    >
+                      {count.toLocaleString()} Listings
                     </span>
                   )}
+                </div>
+
+                <span
+                  aria-hidden
+                  className={cn(
+                    "relative z-10 flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-white shadow-sm transition-transform duration-300 group-hover:translate-x-0.5",
+                    palette.tile
+                  )}
+                >
+                  <ArrowRight className="h-4 w-4" />
                 </span>
               </Link>
             );
           })}
+        </div>
+
+        <div className="mt-8 grid grid-cols-2 gap-y-5 border-t border-line pt-6 sm:grid-cols-4">
+          {trustPoints.map(({ icon: Icon, title, subtitle }, i) => (
+            <div
+              key={title}
+              className={cn("flex items-center gap-3 px-2", i > 0 && "sm:border-l sm:border-line")}
+            >
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary-light text-primary-text">
+                <Icon className="h-4.5 w-4.5" aria-hidden />
+              </span>
+              <div>
+                <p className="text-sm font-semibold text-ink">{title}</p>
+                <p className="text-xs text-ink-muted">{subtitle}</p>
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 
@@ -189,14 +274,22 @@ export default async function Home() {
               <h2 className="font-heading text-2xl font-semibold text-ink">Featured listings</h2>
               <Link
                 href="/search?featured=1"
-                className="inline-flex items-center gap-1 rounded-full bg-primary-light px-3.5 py-1.5 text-sm font-medium text-primary-text transition-colors hover:bg-primary hover:text-ink"
+                className="inline-flex items-center gap-1 rounded-full bg-primary-light px-3.5 py-1.5 text-sm font-medium text-primary-text transition-colors hover:bg-primary hover:text-white"
               >
                 View all
                 <ArrowRight className="h-3.5 w-3.5" aria-hidden />
               </Link>
             </div>
-            <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              {featured.slice(0, 8).map((listing) => (
+            {/* A static 4-col grid leaves a visible gap whenever the featured
+                count isn't a multiple of 4 (e.g. exactly 3 cards) — fall back
+                to 3 columns when that would happen. */}
+            <div
+              className={cn(
+                "mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2",
+                featuredDisplay.length % 4 === 0 ? "lg:grid-cols-4" : "lg:grid-cols-3"
+              )}
+            >
+              {featuredDisplay.map((listing) => (
                 <ListingCard
                   key={listing.id}
                   listing={listing}

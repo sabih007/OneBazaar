@@ -31,7 +31,7 @@ export const BADGE_COLOR: Record<Exclude<Badge, null>, { bg: string; text: strin
   super_hot: { bg: "bg-gold", text: "text-white" },
   hot: { bg: "bg-danger", text: "text-white" },
   top: { bg: "bg-gold", text: "text-white" },
-  featured: { bg: "bg-primary", text: "text-ink" },
+  featured: { bg: "bg-primary", text: "text-white" },
   urgent: { bg: "bg-danger", text: "text-white" },
 };
 

@@ -55,7 +55,7 @@ export default function ReportButton({
 
   return (
     <>
-      <Button variant="ghost" onClick={openModal} className="gap-2 text-ink-muted">
+      <Button variant="secondary" onClick={openModal} className="gap-2">
         <Flag className="h-4 w-4" aria-hidden />
         Report
       </Button>

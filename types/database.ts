@@ -21,6 +21,7 @@ export interface Profile {
   avatar_url: string | null;
   city: string | null;
   is_verified: boolean;
+  email_verified: boolean;
   role: Role;
   created_at: string;
   refresh_credits: number;
@@ -55,6 +56,8 @@ export interface Listing {
   created_at: string;
   expires_at: string;
   free_refresh_used_at: string | null;
+  /** Attached by lib/listings.ts (attachSellerVerified) — not a real column. */
+  seller_is_verified?: boolean;
 }
 
 export interface Package {

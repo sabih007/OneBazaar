@@ -82,7 +82,7 @@ export default function ChatThread({
               <div
                 className={cn(
                   "max-w-[75%] rounded-md px-3.5 py-2 text-sm",
-                  mine ? "bg-primary text-ink" : "bg-background text-ink"
+                  mine ? "bg-primary text-white" : "bg-background text-ink"
                 )}
               >
                 {m.body}
