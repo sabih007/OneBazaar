@@ -51,9 +51,16 @@ export const metadata: Metadata = {
     title: `${SITE_NAME} — Free Classified Ads in Pakistan`,
     description: SITE_DESCRIPTION,
   },
-  ...(process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION && {
-    verification: { google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION },
-  }),
+  verification: {
+    ...(process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION && {
+      google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
+    }),
+    // AdSense also accepts site-ownership verification via this meta tag
+    // instead of (or alongside) the adsbygoogle.js script tag below.
+    ...(ADSENSE_CLIENT_ID && {
+      other: { "google-adsense-account": ADSENSE_CLIENT_ID },
+    }),
+  },
 };
 
 export default function RootLayout({
