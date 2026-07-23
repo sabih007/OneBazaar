@@ -45,6 +45,8 @@ export interface Listing {
   city: string;
   city_slug: string;
   area: string | null;
+  lat: number | null;
+  lng: number | null;
   images: string[];
   status: ListingStatus;
   badge: Badge | null;

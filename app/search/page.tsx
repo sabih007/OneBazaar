@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import { getCityByName } from "@/lib/cities";
 import { getFavoritedListingIds, getListings, type SortOption } from "@/lib/listings";
+import { getPublicProfile } from "@/lib/profiles";
 import { expireStalePromotions } from "@/lib/promotions-server";
 import { createClient, getUser } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/is-configured";
@@ -32,11 +34,17 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
     const user = await getUser();
     userId = user?.id ?? null;
 
+    const profile = userId ? await getPublicProfile(supabase, userId) : null;
+    const originCity = profile?.city ? getCityByName(profile.city) : undefined;
+    const defaultSort: SortOption = featuredOnly ? "recommended" : originCity ? "nearest" : "newest";
+
     const [result, favorited] = await Promise.all([
       getListings(supabase, {
         query: query || undefined,
         featured: featuredOnly || undefined,
-        sort: (sp.sort as SortOption) ?? (featuredOnly ? "recommended" : "newest"),
+        sort: (sp.sort as SortOption) ?? defaultSort,
+        originLat: originCity?.lat,
+        originLng: originCity?.lng,
         page: sp.page ? Number(sp.page) : 1,
       }),
       userId ? getFavoritedListingIds(supabase, userId) : Promise.resolve(new Set<string>()),

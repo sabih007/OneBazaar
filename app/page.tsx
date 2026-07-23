@@ -12,8 +12,9 @@ import {
   Heart,
 } from "lucide-react";
 import { categories } from "@/lib/categories";
-import { cities } from "@/lib/cities";
+import { cities, getCityByName } from "@/lib/cities";
 import { getCategoryCounts, getFavoritedListingIds, getListings } from "@/lib/listings";
+import { getPublicProfile } from "@/lib/profiles";
 import { cn } from "@/lib/utils";
 import { expireStalePromotions } from "@/lib/promotions-server";
 import { expireStaleListings } from "@/lib/listings-server";
@@ -21,6 +22,7 @@ import { createClient, getUser } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/is-configured";
 import ListingCard from "@/components/listings/ListingCard";
 import ListingSlider from "@/components/listings/ListingSlider";
+import NearbyListingsSection from "@/components/listings/NearbyListingsSection";
 import AdSlot from "@/components/ads/AdSlot";
 import { AD_SLOTS } from "@/lib/ads";
 import ComparisonSection from "@/components/marketing/ComparisonSection";
@@ -56,9 +58,11 @@ const howItWorks = [
 export default async function Home() {
   let featured: Awaited<ReturnType<typeof getListings>>["listings"] = [];
   let latest: Awaited<ReturnType<typeof getListings>>["listings"] = [];
+  let nearby: Awaited<ReturnType<typeof getListings>>["listings"] = [];
   let categoryCounts: Record<string, number> = {};
   let userId: string | null = null;
   let favoritedIds = new Set<string>();
+  let hasOriginCity = false;
 
   if (isSupabaseConfigured) {
     const supabase = await createClient();
@@ -67,9 +71,21 @@ export default async function Home() {
     const user = await getUser();
     userId = user?.id ?? null;
 
-    const [featuredResult, latestResult, counts, favorited] = await Promise.all([
+    const profile = userId ? await getPublicProfile(supabase, userId) : null;
+    const originCity = profile?.city ? getCityByName(profile.city) : undefined;
+    hasOriginCity = Boolean(originCity);
+
+    const [featuredResult, latestResult, nearbyResult, counts, favorited] = await Promise.all([
       getListings(supabase, { sort: "recommended", pageSize: 10 }),
       getListings(supabase, { sort: "newest", pageSize: 10 }),
+      originCity
+        ? getListings(supabase, {
+            sort: "nearest",
+            originLat: originCity.lat,
+            originLng: originCity.lng,
+            pageSize: 10,
+          })
+        : Promise.resolve({ listings: [], total: 0, page: 1, pageSize: 10 }),
       getCategoryCounts(supabase),
       userId ? getFavoritedListingIds(supabase, userId) : Promise.resolve(new Set<string>()),
     ]);
@@ -77,6 +93,7 @@ export default async function Home() {
       (l) => l.badge === "featured" || l.badge === "top" || l.badge === "hot" || l.badge === "super_hot"
     );
     latest = latestResult.listings;
+    nearby = nearbyResult.listings;
     categoryCounts = counts;
     favoritedIds = favorited;
   }
@@ -135,6 +152,35 @@ export default async function Home() {
           </div>
         </div>
       </section>
+
+      {hasOriginCity ? (
+        nearby.length > 0 && (
+          <section className="container-app py-12">
+            <div className="flex items-center justify-between">
+              <h2 className="flex items-center gap-2 font-heading text-2xl font-semibold text-ink">
+                <MapPin className="h-5 w-5 text-primary-text" aria-hidden />
+                Near You
+              </h2>
+              <Link href="/search" className="text-sm font-medium text-primary-text hover:text-primary-text-hover">
+                View all
+              </Link>
+            </div>
+            <div className="mt-5">
+              <ListingSlider
+                listings={nearby}
+                userId={userId}
+                favoritedIds={favoritedIds}
+                emptyTitle="No nearby listings yet"
+                emptyDescription="Check back soon."
+              />
+            </div>
+          </section>
+        )
+      ) : (
+        // No profile city to derive an origin from (guest, or a user who
+        // never set one) — ask the browser for their location client-side.
+        <NearbyListingsSection userId={userId} favoritedIds={favoritedIds} />
+      )}
 
       <section className="container-app py-12">
         <span className="inline-flex items-center gap-1.5 rounded-full bg-primary-light px-3 py-1 text-xs font-semibold uppercase tracking-wide text-primary-text">

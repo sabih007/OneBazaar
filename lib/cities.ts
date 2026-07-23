@@ -36,3 +36,12 @@ export const citiesBySlug: Record<string, City> = Object.fromEntries(
 export function getCity(slug: string): City | undefined {
   return citiesBySlug[slug];
 }
+
+/** profiles.city stores the display name (e.g. "Karachi"), not the slug. */
+export const citiesByName: Record<string, City> = Object.fromEntries(
+  cities.map((c) => [c.name, c])
+);
+
+export function getCityByName(name: string): City | undefined {
+  return citiesByName[name];
+}

@@ -2,7 +2,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Listing } from "@/types/database";
 import { slugifyTitle } from "@/lib/seo/slugify";
 
-export type SortOption = "recommended" | "newest" | "price_asc" | "price_desc";
+export type SortOption = "recommended" | "newest" | "price_asc" | "price_desc" | "nearest";
 
 /** Free-tier cap on active listings (marketplace-packages-pakistan.md §1). */
 export const FREE_TIER_ACTIVE_LIMIT = 5;
@@ -58,19 +58,14 @@ export interface ListingFilters {
   sort?: SortOption;
   page?: number;
   pageSize?: number;
+  /** Origin point for sort: "nearest" — resolved from the viewer's profile city (lib/cities.ts). */
+  originLat?: number;
+  originLng?: number;
 }
 
-export async function getListings(supabase: SupabaseClient, filters: ListingFilters) {
-  const page = filters.page ?? 1;
-  const pageSize = filters.pageSize ?? 24;
-  const from = (page - 1) * pageSize;
-  const to = from + pageSize - 1;
-
-  let query = supabase
-    .from("listings")
-    .select("*", { count: "exact" })
-    .eq("status", "active");
-
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- shared between two differently-typed Supabase query builders (full select vs. head-only count)
+function applyListingFilters(query: any, filters: ListingFilters): any {
+  query = query.eq("status", "active");
   if (filters.categorySlug) query = query.eq("category_slug", filters.categorySlug);
   if (filters.citySlug) query = query.eq("city_slug", filters.citySlug);
   if (filters.subcategorySlug) query = query.eq("subcategory", filters.subcategorySlug);
@@ -79,6 +74,45 @@ export async function getListings(supabase: SupabaseClient, filters: ListingFilt
   if (filters.maxPrice !== undefined) query = query.lte("price", filters.maxPrice);
   if (filters.query) query = query.ilike("title", `%${filters.query}%`);
   if (filters.featured) query = query.in("badge", ["featured", "top", "hot", "super_hot"]);
+  return query;
+}
+
+export async function getListings(supabase: SupabaseClient, filters: ListingFilters) {
+  const page = filters.page ?? 1;
+  const pageSize = filters.pageSize ?? 24;
+  const from = (page - 1) * pageSize;
+  const to = from + pageSize - 1;
+
+  if (filters.sort === "nearest" && filters.originLat !== undefined && filters.originLng !== undefined) {
+    const countQuery = applyListingFilters(
+      supabase.from("listings").select("*", { count: "exact", head: true }),
+      filters
+    );
+
+    const [{ data, error }, { count, error: countError }] = await Promise.all([
+      supabase.rpc("listings_nearby", {
+        origin_lat: filters.originLat,
+        origin_lng: filters.originLng,
+        p_category_slug: filters.categorySlug ?? null,
+        p_subcategory_slug: filters.subcategorySlug ?? null,
+        p_condition: filters.condition ?? null,
+        p_min_price: filters.minPrice ?? null,
+        p_max_price: filters.maxPrice ?? null,
+        p_query: filters.query ?? null,
+        p_featured: filters.featured ?? null,
+        p_limit: pageSize,
+        p_offset: from,
+      }),
+      countQuery,
+    ]);
+    if (error) throw error;
+    if (countError) throw countError;
+
+    const listings = await attachSellerVerified(supabase, (data ?? []) as Listing[]);
+    return { listings, total: count ?? 0, page, pageSize };
+  }
+
+  let query = applyListingFilters(supabase.from("listings").select("*", { count: "exact" }), filters);
 
   switch (filters.sort) {
     case "price_asc":
