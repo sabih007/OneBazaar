@@ -4,10 +4,8 @@ import { categories } from "@/lib/categories";
 import { cities } from "@/lib/cities";
 import NewsletterForm from "@/components/layout/NewsletterForm";
 
-// TODO: replace with the real Buysellox profile URLs
 const SOCIAL_LINKS = {
-  facebook: "https://www.facebook.com/",
-  instagram: "https://www.instagram.com/",
+  facebook: "https://www.facebook.com/profile.php?id=61592255335096",
 };
 
 export default function Footer() {
@@ -62,28 +60,6 @@ export default function Footer() {
                 <path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987H7.898v-2.89h2.54V9.797c0-2.507 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12Z" />
               </svg>
             </a>
-            <a
-              href={SOCIAL_LINKS.instagram}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Follow Buysellox on Instagram"
-              className="flex h-9 w-9 items-center justify-center rounded-full border border-line text-ink-muted transition-colors hover:border-primary hover:text-primary-text"
-            >
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden="true"
-                className="h-4 w-4"
-              >
-                <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
-                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37Z" />
-                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
-              </svg>
-            </a>
           </div>
         </div>
 
@@ -134,6 +110,11 @@ export default function Footer() {
                 Become our partner
               </Link>
             </li>
+            <li>
+              <Link href="/contact" className="hover:text-primary-text">
+                Contact us
+              </Link>
+            </li>
           </ul>
         </div>
       </div>
@@ -148,6 +129,12 @@ export default function Footer() {
             </Link>
             <Link href="/privacy" className="hover:text-primary-text">
               Privacy Policy
+            </Link>
+            <Link href="/refund-policy" className="hover:text-primary-text">
+              Refund Policy
+            </Link>
+            <Link href="/ownership" className="hover:text-primary-text">
+              Ownership
             </Link>
             <Link href="/partner" className="hover:text-primary-text">
               Partner

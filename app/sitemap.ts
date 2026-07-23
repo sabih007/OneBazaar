@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/lib/seo/site";
 import { categories } from "@/lib/categories";
 import { cities } from "@/lib/cities";
+import { MIN_LISTINGS_TO_INDEX } from "@/lib/listings";
 import { createPublicClient } from "@/lib/supabase/public";
 import { isSupabaseConfigured } from "@/lib/supabase/is-configured";
 
@@ -25,13 +26,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       .order("created_at", { ascending: false })
       .range(0, MAX_LISTINGS - 1);
 
-    // Only submit category × city pages that actually have inventory —
-    // an empty browse page is worse for crawl budget/ranking than not
-    // listing it at all.
-    const combosWithInventory = new Set<string>();
+    // Only submit category × city pages that meet the same MIN_LISTINGS_TO_INDEX
+    // bar the page itself uses to decide index vs. noindex (lib/listings.ts) —
+    // otherwise the sitemap would submit URLs Google's told to skip anyway.
+    const listingCountByCombo = new Map<string, number>();
 
     for (const listing of data ?? []) {
-      combosWithInventory.add(`${listing.category_slug}/${listing.city_slug}`);
+      const combo = `${listing.category_slug}/${listing.city_slug}`;
+      listingCountByCombo.set(combo, (listingCountByCombo.get(combo) ?? 0) + 1);
       entries.push({
         url: `${SITE_URL}/${listing.category_slug}/${listing.city_slug}/${listing.slug}`,
         lastModified: listing.created_at,
@@ -42,7 +44,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     for (const category of categories) {
       for (const city of cities) {
-        if (!combosWithInventory.has(`${category.slug}/${city.slug}`)) continue;
+        const count = listingCountByCombo.get(`${category.slug}/${city.slug}`) ?? 0;
+        if (count < MIN_LISTINGS_TO_INDEX) continue;
         entries.push({
           url: `${SITE_URL}/${category.slug}/${city.slug}`,
           changeFrequency: "daily",

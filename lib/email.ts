@@ -1,5 +1,6 @@
 import nodemailer, { type Transporter } from "nodemailer";
 import type { PartnerApplicationInput } from "@/lib/validations/partner";
+import type { ContactMessageInput } from "@/lib/validations/contact";
 import { SITE_URL } from "@/lib/seo/site";
 import { formatPKR } from "@/lib/utils";
 
@@ -104,6 +105,17 @@ export async function sendSavedSearchAlertEmail(
     subject: `New match: ${listing.title}`,
     text: `A new listing matches your saved search on Buysellox.com:\n\n${listing.title} — ${formatPKR(listing.price)} in ${listing.city}\n\n${SITE_URL}${listing.url}`,
     logPrefix: "[saved-search-alert]",
+  });
+}
+
+/** Sends a message from the /contact page to the support inbox. */
+export async function sendContactMessageEmail(data: ContactMessageInput): Promise<boolean> {
+  return sendEmail({
+    to: process.env.CONTACT_MESSAGES_TO ?? DEFAULT_TO,
+    replyTo: data.email,
+    subject: `New contact message — ${data.name}`,
+    text: `Name: ${data.name}\nEmail: ${data.email}\n\nMessage:\n${data.message}`,
+    logPrefix: "[contact-message]",
   });
 }
 

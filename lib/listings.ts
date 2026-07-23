@@ -7,6 +7,9 @@ export type SortOption = "recommended" | "newest" | "price_asc" | "price_desc" |
 /** Free-tier cap on active listings (marketplace-packages-pakistan.md §1). */
 export const FREE_TIER_ACTIVE_LIMIT = 5;
 
+/** Below this many active listings, a category/city page is noindex'd (prelaunch review §2.1). */
+export const MIN_LISTINGS_TO_INDEX = 5;
+
 /**
  * Resolves how many active listings a user may have — their subscription
  * tier's `active_slot_limit` (§3) if they have one, else the free-tier
@@ -75,6 +78,19 @@ function applyListingFilters(query: any, filters: ListingFilters): any {
   if (filters.query) query = query.ilike("title", `%${filters.query}%`);
   if (filters.featured) query = query.in("badge", ["featured", "top", "hot", "super_hot"]);
   return query;
+}
+
+/** Cheap count-only lookup — used to decide whether a category/city page has enough inventory to index. */
+export async function getListingCount(
+  supabase: SupabaseClient,
+  filters: Pick<ListingFilters, "categorySlug" | "citySlug">
+): Promise<number> {
+  const { count, error } = await applyListingFilters(
+    supabase.from("listings").select("*", { count: "exact", head: true }),
+    filters
+  );
+  if (error) throw error;
+  return count ?? 0;
 }
 
 export async function getListings(supabase: SupabaseClient, filters: ListingFilters) {

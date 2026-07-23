@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Terms & Conditions",
+  description: "The terms and conditions that govern your use of Buysellox.com's marketplace.",
+  alternates: { canonical: "/terms" },
 };
 
 export default function TermsPage() {

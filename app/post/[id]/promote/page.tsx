@@ -16,6 +16,13 @@ const CHECKOUT_STATUS_BANNER: Record<string, { tone: "success" | "danger"; text:
     tone: "success",
     text: "Payment received — we're confirming it now, this usually takes a few seconds. Check My promotions for the latest status.",
   },
+  // JazzCash's Hosted Checkout Page can redirect back with an explicit
+  // failure (declined, cancelled, expired) — Lemon Squeezy's redirect never
+  // fires on failure, so only the JazzCash path sends this key.
+  failed: {
+    tone: "danger",
+    text: "Payment didn't go through. No charge was made — please try again or pick a different payment method.",
+  },
 };
 
 export default async function PromoteListingPage({

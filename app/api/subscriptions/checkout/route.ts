@@ -8,6 +8,9 @@ const VARIANT_ENV: Record<string, string | undefined> = {
   shop: process.env.LEMONSQUEEZY_SHOP_VARIANT_ID,
   dealer: process.env.LEMONSQUEEZY_DEALER_VARIANT_ID,
   business_pro: process.env.LEMONSQUEEZY_BUSINESS_PRO_VARIANT_ID,
+  agent_starter: process.env.LEMONSQUEEZY_AGENT_STARTER_VARIANT_ID,
+  agency: process.env.LEMONSQUEEZY_AGENCY_VARIANT_ID,
+  agency_premium: process.env.LEMONSQUEEZY_AGENCY_PREMIUM_VARIANT_ID,
 };
 
 /** Starts a dealer-tier subscription checkout. Upgrade/downgrade/proration is out of scope — cancel via the portal first. */

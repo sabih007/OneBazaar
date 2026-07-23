@@ -2,7 +2,13 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getCategory } from "@/lib/categories";
 import { getCity } from "@/lib/cities";
-import { getFavoritedListingIds, getListings, type SortOption } from "@/lib/listings";
+import {
+  getFavoritedListingIds,
+  getListingCount,
+  getListings,
+  MIN_LISTINGS_TO_INDEX,
+  type SortOption,
+} from "@/lib/listings";
 import { expireStalePromotions } from "@/lib/promotions-server";
 import { createClient, getUser } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/is-configured";
@@ -32,10 +38,21 @@ export async function generateMetadata({ params }: BrowsePageProps): Promise<Met
   const description = `Free classified ads for ${categoryLower} in ${city.name}, Pakistan. Browse ${category.subcategories.length ? `${category.subcategories.map((s) => s.name.toLowerCase()).slice(0, 3).join(", ")} and more — ` : ""}thousands of verified listings with prices in Rs. on Buysellox.com. Post your classified ad free, no commission.`;
   const canonical = `/${category.slug}/${city.slug}`;
 
+  // Thin/empty category×city combinations (there are hundreds) shouldn't be
+  // indexed until they actually have inventory — noindex, not nofollow, so
+  // Google still crawls through to real listings linked from the page.
+  let hasEnoughListings = false;
+  if (isSupabaseConfigured) {
+    const supabase = await createClient();
+    const count = await getListingCount(supabase, { categorySlug: category.slug, citySlug: city.slug });
+    hasEnoughListings = count >= MIN_LISTINGS_TO_INDEX;
+  }
+
   return {
     title,
     description,
     alternates: { canonical },
+    robots: { index: hasEnoughListings, follow: true },
     openGraph: { title, description, url: canonical, type: "website", locale: "en_PK" },
   };
 }

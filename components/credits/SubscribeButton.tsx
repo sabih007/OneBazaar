@@ -18,6 +18,11 @@ export default function SubscribeButton({ tier }: { tier: SubscriptionTier }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ tier }),
       });
+      if (res.status === 401) {
+        // Public pages like /partner render this for logged-out visitors too.
+        window.location.href = "/login?redirect=" + encodeURIComponent(window.location.pathname);
+        return;
+      }
       const json = await res.json().catch(() => null);
       if (!res.ok || !json?.checkoutUrl) {
         throw new Error(json?.error ?? "Couldn't start checkout. Please try again.");

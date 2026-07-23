@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Safety Tips",
+  description: "Practical safety tips for buying and selling safely on Buysellox.com.",
+  alternates: { canonical: "/safety" },
 };
 
 export default function SafetyPage() {

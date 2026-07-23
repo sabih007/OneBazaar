@@ -1,13 +1,15 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Check, Crown, Handshake, TrendingUp, ShieldCheck } from "lucide-react";
-import { PARTNER_TIERS } from "@/lib/partners";
+import { Crown, Handshake, TrendingUp, ShieldCheck } from "lucide-react";
+import { AGENT_TIER_ORDER, TIER_INFO } from "@/lib/subscriptions";
+import { formatPKR } from "@/lib/utils";
 import PartnerForm from "@/components/partner/PartnerForm";
+import SubscribeButton from "@/components/credits/SubscribeButton";
 
 export const metadata: Metadata = {
   title: "Become Our Partner",
   description:
-    "Partner with Buysellox.com to reach more buyers across Pakistan. Apply to become Our Partner or Our Premium Partner and unlock badges, priority placement, and dedicated support.",
+    "Real-estate agent and agency plans on Buysellox.com — published pricing, well below market, with priority placement and a verified agency badge.",
   alternates: { canonical: "/partner" },
 };
 
@@ -47,9 +49,8 @@ export default function PartnerPage() {
             Partner with <span className="text-primary-text">Buysellox</span>
           </h1>
           <p className="mx-auto mt-4 max-w-xl text-sm text-ink-muted sm:text-base">
-            Grow your business on Pakistan&apos;s marketplace. Become <strong>Our Partner</strong> or{" "}
-            <strong>Our Premium Partner</strong> to unlock badges, priority placement, and dedicated
-            support.
+            Real-estate agent and agency plans with pricing published upfront — priority
+            placement, a verified agency badge, and dedicated support.
           </p>
           <div className="mt-8">
             <Link
@@ -88,52 +89,64 @@ export default function PartnerPage() {
         <div className="container-app">
           <div className="text-center">
             <h2 className="font-heading text-2xl font-semibold text-ink sm:text-3xl">
-              Choose your partnership
+              Plans for agents &amp; agencies
             </h2>
             <p className="mx-auto mt-2 max-w-xl text-sm text-ink-muted">
-              Two ways to partner with us — pick the one that fits your business.
+              Real, published pricing — well below what you&apos;re paying today.
             </p>
           </div>
 
-          <div className="mx-auto mt-10 grid max-w-3xl gap-6 sm:grid-cols-2">
-            {PARTNER_TIERS.map((tier) => (
-              <div
-                key={tier.key}
-                className={
-                  tier.highlight
-                    ? "relative rounded-[var(--radius-lg)] border-2 border-primary bg-surface p-6 shadow-[var(--shadow-card-hover)]"
-                    : "relative rounded-[var(--radius-lg)] border border-line bg-surface p-6 shadow-[var(--shadow-card)]"
-                }
-              >
-                {tier.highlight && (
-                  <span className="absolute -top-3 left-1/2 inline-flex -translate-x-1/2 items-center gap-1 rounded-full bg-primary px-3 py-1 text-xs font-semibold text-white">
-                    <Crown className="h-3.5 w-3.5" aria-hidden />
-                    Most popular
-                  </span>
-                )}
-                <h3 className="font-heading text-xl font-bold text-ink">{tier.name}</h3>
-                <p className="mt-1 text-sm text-ink-muted">{tier.tagline}</p>
-                <ul className="mt-5 space-y-2.5">
-                  {tier.benefits.map((benefit) => (
-                    <li key={benefit} className="flex items-start gap-2 text-sm text-ink">
-                      <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary-text" aria-hidden />
-                      <span>{benefit}</span>
-                    </li>
-                  ))}
-                </ul>
-                <Link
-                  href="#apply"
+          <div className="mx-auto mt-10 grid max-w-4xl gap-6 sm:grid-cols-3">
+            {AGENT_TIER_ORDER.map((tier) => {
+              const info = TIER_INFO[tier];
+              const highlight = tier === "agency";
+              return (
+                <div
+                  key={tier}
                   className={
-                    tier.highlight
-                      ? "mt-6 flex w-full items-center justify-center rounded-md bg-primary px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-primary-hover"
-                      : "mt-6 flex w-full items-center justify-center rounded-md border border-line px-4 py-2.5 text-sm font-semibold text-ink transition-colors hover:border-primary hover:text-primary-text"
+                    highlight
+                      ? "relative rounded-[var(--radius-lg)] border-2 border-primary bg-surface p-6 shadow-[var(--shadow-card-hover)]"
+                      : "relative rounded-[var(--radius-lg)] border border-line bg-surface p-6 shadow-[var(--shadow-card)]"
                   }
                 >
-                  Apply for {tier.name}
-                </Link>
-              </div>
-            ))}
+                  {highlight && (
+                    <span className="absolute -top-3 left-1/2 inline-flex -translate-x-1/2 items-center gap-1 rounded-full bg-primary px-3 py-1 text-xs font-semibold text-white">
+                      <Crown className="h-3.5 w-3.5" aria-hidden />
+                      Most popular
+                    </span>
+                  )}
+                  <h3 className="font-heading text-xl font-bold text-ink">{info.name}</h3>
+                  <p className="mt-1 font-heading text-2xl font-bold text-ink">
+                    {formatPKR(info.price)}
+                    <span className="text-sm font-normal text-ink-muted">/mo</span>
+                  </p>
+                  <ul className="mt-5 space-y-1.5 text-sm text-ink-muted">
+                    <li>{info.activeSlotLimit} active property listings</li>
+                    <li>{info.featuredCredits} Premium listing credits/mo</li>
+                    <li>{info.hotCredits} Hot listing credits/mo</li>
+                    <li>{info.refreshCredits} Refresh credits/mo</li>
+                    <li>Verified agency badge</li>
+                  </ul>
+                  <div className="mt-6">
+                    {tier === "agent_starter" ? (
+                      <SubscribeButton tier={tier} />
+                    ) : (
+                      <Link
+                        href="#apply"
+                        className="flex w-full items-center justify-center rounded-md border border-line px-4 py-2.5 text-sm font-semibold text-ink transition-colors hover:border-primary hover:text-primary-text"
+                      >
+                        Apply now
+                      </Link>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
           </div>
+          <p className="mx-auto mt-6 max-w-xl text-center text-xs text-ink-muted">
+            Agency and Agency Premium include onboarding support and are set up by our team — apply
+            below and we&apos;ll get you started.
+          </p>
         </div>
       </section>
 
