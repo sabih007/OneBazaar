@@ -118,7 +118,9 @@ export interface Message {
   id: string;
   conversation_id: string;
   sender_id: string;
-  body: string;
+  body: string | null;
+  audio_url: string | null;
+  audio_duration_ms: number | null;
   created_at: string;
   read_at: string | null;
 }

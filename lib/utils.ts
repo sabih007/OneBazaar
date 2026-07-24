@@ -44,6 +44,13 @@ export function toWhatsAppNumber(phone: string): string | null {
   return null;
 }
 
+export function formatDuration(ms: number): string {
+  const totalSeconds = Math.round(ms / 1000);
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+}
+
 export function formatChatTimestamp(iso: string): string {
   const date = new Date(iso);
   const now = new Date();

@@ -38,7 +38,7 @@ export interface ChatListItem {
     city_slug: string;
   } | null;
   lastMessage: {
-    body: string;
+    body: string | null;
     senderId: string;
     createdAt: string;
   } | null;
@@ -103,11 +103,11 @@ export async function getConversationSummaries(
           }
         : null,
       lastMessage:
-        r.last_message_body != null
+        r.last_message_created_at != null
           ? {
               body: r.last_message_body,
               senderId: r.last_message_sender_id!,
-              createdAt: r.last_message_created_at!,
+              createdAt: r.last_message_created_at,
             }
           : null,
       unreadCount: r.unread_count,
@@ -143,18 +143,54 @@ export async function getMessages(supabase: SupabaseClient, conversationId: stri
   return (data ?? []) as Message[];
 }
 
+type SendMessagePayload =
+  | { body: string }
+  | { audioUrl: string; audioDurationMs: number };
+
 export async function sendMessage(
   supabase: SupabaseClient,
-  { conversationId, senderId, body }: { conversationId: string; senderId: string; body: string }
+  params: { conversationId: string; senderId: string } & SendMessagePayload
 ) {
+  const { conversationId, senderId } = params;
+  const insert =
+    "body" in params
+      ? { body: params.body }
+      : { audio_url: params.audioUrl, audio_duration_ms: params.audioDurationMs };
+
   const { data, error } = await supabase
     .from("messages")
-    .insert({ conversation_id: conversationId, sender_id: senderId, body })
+    .insert({ conversation_id: conversationId, sender_id: senderId, ...insert })
     .select()
     .single();
 
   if (error) throw error;
   return data as Message;
+}
+
+const VOICE_MESSAGE_EXT: Record<string, string> = {
+  "audio/webm": "webm",
+  "audio/mp4": "m4a",
+  "audio/ogg": "ogg",
+};
+
+export async function uploadVoiceMessage(
+  supabase: SupabaseClient,
+  userId: string,
+  blob: Blob
+): Promise<string> {
+  const contentType = blob.type || "audio/webm";
+  const baseType = contentType.split(";")[0];
+  const ext = VOICE_MESSAGE_EXT[baseType] ?? "webm";
+  const path = `${userId}/${crypto.randomUUID()}.${ext}`;
+
+  const { error } = await supabase.storage
+    .from("voice-messages")
+    .upload(path, blob, { contentType });
+
+  if (error) throw error;
+
+  const { data } = supabase.storage.from("voice-messages").getPublicUrl(path);
+  return data.publicUrl;
 }
 
 export function subscribeToMessages(

@@ -58,7 +58,9 @@ export default function ChatList({
         const cover = c.listing?.images?.[0];
         const unread = c.unreadCount > 0;
         const preview = c.lastMessage
-          ? `${c.lastMessage.senderId === currentUserId ? "You: " : ""}${c.lastMessage.body}`
+          ? `${c.lastMessage.senderId === currentUserId ? "You: " : ""}${
+              c.lastMessage.body ?? "\u{1F3A4} Voice message"
+            }`
           : "Say hello \u{1F44B}";
 
         return (
