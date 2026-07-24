@@ -199,7 +199,7 @@ export function subscribeToMessages(
   onInsert: (message: Message) => void
 ) {
   const channel = supabase
-    .channel(`messages:${conversationId}`)
+    .channel(`messages:${conversationId}:${crypto.randomUUID()}`)
     .on(
       "postgres_changes",
       {
@@ -222,7 +222,7 @@ export function subscribeToConversationUpdates(
   onInsert: (message: Message) => void
 ) {
   const channel = supabase
-    .channel("inbox:messages")
+    .channel(`inbox:messages:${crypto.randomUUID()}`)
     .on(
       "postgres_changes",
       { event: "INSERT", schema: "public", table: "messages" },
